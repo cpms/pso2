@@ -95,8 +95,8 @@ async def query_data(url, proxy=''):
         return None
 
 async def post_captcha_img(data):
-    csrftoken = '8pcWwO4gbPGqFSdHN6befQvWX95KsZ8Q2eSReVxqIP8cXyx3XSxiU3a1fMfHOuxv'
-    csrfmiddlewaretoken = 'LD0wQha7iE7y7iArpuIaIxJV4rdJsemiFsGryoDhPEzkpYUNzg4enKo0m4nGOJLX'
+    csrftoken = '8pcWwO4gbPGqFSdHN6befQvWX95KsZ8Q2eSReVxqIP8cXyx3XSxiU3a1fMfHOuxv'#抓访问首页的cookies
+    csrfmiddlewaretoken = 'LD0wQha7iE7y7iArpuIaIxJV4rdJsemiFsGryoDhPEzkpYUNzg4enKo0m4nGOJLX'#抓接口地址提交的隐藏表单
     
     multipartWriter = aiohttp.MultipartWriter('mixed')
     multipartWriter.append(csrfmiddlewaretoken).set_content_disposition('form-data', name = 'csrfmiddlewaretoken')
@@ -257,14 +257,11 @@ def remove_lf(content):
     text = text.rstrip()
     return text
 
-async def generate_pso2_image(url_list,mode):#mode0=土豆，mode1=土豆细节，mode2=蓝白矿，mode3=蓝白矿细节，mode4=验证码
-    if mode != 4:
-        try:
-            url = html.unescape(url_list[mode])
-        except:
-            return None
-    elif mode == 4:
-        url = url_list
+async def generate_pso2_image(url_list,mode):#mode0=土豆，mode1=土豆细节，mode2=蓝矿，mode3=蓝矿细节
+    try:
+        url = html.unescape(url_list[mode])
+    except:
+        return None
     proxy = ''
     for purl in data['proxy_urls']:
         if purl in url:
@@ -400,7 +397,7 @@ async def get_rss_news(rss_url):
     last_time = data['last_time'][rss_url]
 
     for item in feed["entries"]:
-        if get_published_time(item) > last_time or (first_start_flag and item['description'].find("フォトンスケイル") != -1): #插件启动后的第一次获取土豆和蓝白矿图
+        if get_published_time(item) > last_time or (first_start_flag and item['description'].find("フォトンスケイル") != -1): #插件启动后的第一次获取土豆和蓝矿图
             if first_start_flag:
                 first_start_flag = False
             summary = item['summary']
@@ -409,14 +406,27 @@ async def get_rss_news(rss_url):
             if i > 0:
                 summary = summary[:i]
             if item['description'].find("フォトンスケイル") != -1: #处理土豆和蓝矿图
-                alpha_img_bin = await generate_pso2_image(get_image_url(summary),0)
-                alpha_detail_bin = await generate_pso2_image(get_image_url(summary),1)
-                sukeiru_img_bin = await generate_pso2_image(get_image_url(summary),2)
-                sukeiru_detail_bin = await generate_pso2_image(get_image_url(summary),3)
+                image_urls = get_image_url(summary)
+                p1 = 0;p2 = 1;p3 = 2;p4 = 3
+                if len(image_urls) == 3:#处理只有3张图的情况
+                    p2 = None;p3 = 1;p4 = 2
+                alpha_img_bin = await generate_pso2_image(image_urls,p1)
+                alpha_detail_bin = await generate_pso2_image(image_urls,p2)
+                sukeiru_img_bin = await generate_pso2_image(image_urls,p3)
+                sukeiru_detail_bin = await generate_pso2_image(image_urls,p4)
                 try:
                     alpha_img_base64 = f"base64://{base64.b64encode(add_salt(alpha_img_bin)).decode()}"
+                except:
+                    pass
+                try:
                     alpha_detail_base64 = f"base64://{base64.b64encode(add_salt(alpha_detail_bin)).decode()}"
+                except:
+                    pass
+                try:
                     sukeiru_img_base64 = f"base64://{base64.b64encode(add_salt(sukeiru_img_bin)).decode()}"
+                except:
+                    pass
+                try:
                     sukeiru_detail_base64 = f"base64://{base64.b64encode(add_salt(sukeiru_detail_bin)).decode()}"
                 except:
                     pass
