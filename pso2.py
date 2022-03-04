@@ -26,6 +26,7 @@ data = {
     'last_time': {},
     'group_rss': {},
     'group_mode': {},
+    'ngs_emg_time': [],
 }
 
 HELP_MSG = '''命令前缀pso2cmd
@@ -37,6 +38,7 @@ pso2cmd remove 序号 : 删除订阅列表指定项
 今日蓝矿：发送最新蓝矿图
 今日蓝矿细节：发送最新蓝矿图细节图
 最近紧急：发送最近一次NGS紧急任务的发生时间
+紧急记录：发送今日NGS紧急任务的时间记录
 验证码识别：在此关键词后面接上SEGA的验证码图片，尝试进行识别
 '''
 
@@ -45,7 +47,6 @@ alpha_img_base64 = ""
 sukeiru_img_base64 = ""
 alpha_detail_base64 = ""
 sukeiru_detail_base64 = ""
-last_ngs_emg_time = ""
 first_start_flag = True
 
 def save_data():
@@ -78,6 +79,8 @@ def load_data():
                 data['proxy'] = d['proxy']
             if 'proxy_urls' in d:
                 data['proxy_urls'] = d['proxy_urls']
+            if 'ngs_emg_time' in d :
+                data['ngs_emg_time'] = d['ngs_emg_time']
     except:
         traceback.print_exc()
     global default_rss
@@ -130,55 +133,55 @@ def ngs_translate(content):
     return content
 
 def ngs_time(content):#转换成北京時間ngs
-    content = content.replace("01:00","北京时间00点")
-    content = content.replace("02:00","北京时间01点")
-    content = content.replace("03:00","北京时间02点")
-    content = content.replace("04:00","北京时间03点")
-    content = content.replace("05:00","北京时间04点")
-    content = content.replace("06:00","北京时间05点")
-    content = content.replace("07:00","北京时间06点")
-    content = content.replace("08:00","北京时间07点")
-    content = content.replace("09:00","北京时间08点")
-    content = content.replace("10:00","北京时间09点")
-    content = content.replace("11:00","北京时间10点")
-    content = content.replace("12:00","北京时间11点")
-    content = content.replace("13:00","北京时间12点")
-    content = content.replace("14:00","北京时间13点")
-    content = content.replace("15:00","北京时间14点")
-    content = content.replace("16:00","北京时间15点")
-    content = content.replace("17:00","北京时间16点")
-    content = content.replace("18:00","北京时间17点")
-    content = content.replace("19:00","北京时间18点")
-    content = content.replace("20:00","北京时间19点")
-    content = content.replace("21:00","北京时间20点")
-    content = content.replace("22:00","北京时间21点")
-    content = content.replace("23:00","北京时间22点")
-    content = content.replace("00:00","北京时间23点")
+    content = content.replace("01:00","00点")
+    content = content.replace("02:00","01点")
+    content = content.replace("03:00","02点")
+    content = content.replace("04:00","03点")
+    content = content.replace("05:00","04点")
+    content = content.replace("06:00","05点")
+    content = content.replace("07:00","06点")
+    content = content.replace("08:00","07点")
+    content = content.replace("09:00","08点")
+    content = content.replace("10:00","09点")
+    content = content.replace("11:00","10点")
+    content = content.replace("12:00","11点")
+    content = content.replace("13:00","12点")
+    content = content.replace("14:00","13点")
+    content = content.replace("15:00","14点")
+    content = content.replace("16:00","15点")
+    content = content.replace("17:00","16点")
+    content = content.replace("18:00","17点")
+    content = content.replace("19:00","18点")
+    content = content.replace("20:00","19点")
+    content = content.replace("21:00","20点")
+    content = content.replace("22:00","21点")
+    content = content.replace("23:00","22点")
+    content = content.replace("00:00","23点")
     
-    content = content.replace("01:30","北京时间00点30分")
-    content = content.replace("02:30","北京时间01点30分")
-    content = content.replace("03:30","北京时间02点30分")
-    content = content.replace("04:30","北京时间03点30分")
-    content = content.replace("05:30","北京时间04点30分")
-    content = content.replace("06:30","北京时间05点30分")
-    content = content.replace("07:30","北京时间06点30分")
-    content = content.replace("08:30","北京时间07点30分")
-    content = content.replace("09:30","北京时间08点30分")
-    content = content.replace("10:30","北京时间09点30分")
-    content = content.replace("11:30","北京时间10点30分")
-    content = content.replace("12:30","北京时间11点30分")
-    content = content.replace("13:30","北京时间12点30分")
-    content = content.replace("14:30","北京时间13点30分")
-    content = content.replace("15:30","北京时间14点30分")
-    content = content.replace("16:30","北京时间15点30分")
-    content = content.replace("17:30","北京时间16点30分")
-    content = content.replace("18:30","北京时间17点30分")
-    content = content.replace("19:30","北京时间18点30分")
-    content = content.replace("20:30","北京时间19点30分")
-    content = content.replace("21:30","北京时间20点30分")
-    content = content.replace("22:30","北京时间21点30分")
-    content = content.replace("23:30","北京时间22点30分")
-    content = content.replace("00:30","北京时间23点30分")
+    content = content.replace("01:30","00点30分")
+    content = content.replace("02:30","01点30分")
+    content = content.replace("03:30","02点30分")
+    content = content.replace("04:30","03点30分")
+    content = content.replace("05:30","04点30分")
+    content = content.replace("06:30","05点30分")
+    content = content.replace("07:30","06点30分")
+    content = content.replace("08:30","07点30分")
+    content = content.replace("09:30","08点30分")
+    content = content.replace("10:30","09点30分")
+    content = content.replace("11:30","10点30分")
+    content = content.replace("12:30","11点30分")
+    content = content.replace("13:30","12点30分")
+    content = content.replace("14:30","13点30分")
+    content = content.replace("15:30","14点30分")
+    content = content.replace("16:30","15点30分")
+    content = content.replace("17:30","16点30分")
+    content = content.replace("18:30","17点30分")
+    content = content.replace("19:30","18点30分")
+    content = content.replace("20:30","19点30分")
+    content = content.replace("21:30","20点30分")
+    content = content.replace("22:30","21点30分")
+    content = content.replace("23:30","22点30分")
+    content = content.replace("00:30","23点30分")
     return content
 
 def pso2_time(content):#转换成北京時間pso2
@@ -218,7 +221,6 @@ def pso2_time(content):#转换成北京時間pso2
     return content
 
 def remove_html(content):
-    global last_ngs_emg_time
     #移除html标签
     content = content.replace('<br>','\n')#转换换行符1
     content = content.replace('<br /><br />','\n')#转换换行符2
@@ -226,16 +228,16 @@ def remove_html(content):
         content = ngs_time(content)
         if content.find("#PSO2NGS緊急通知") >= 0 and content.find("ステージライブ") >= 0: #处理半点紧急
             if time.localtime().tm_hour == 23:
-                last_ngs_emg_time = '00:30'
+                data['ngs_emg_time'].append('00:30')
             else:
                 ngs_emg_time_tmp = time.localtime().tm_hour + 1
-                last_ngs_emg_time = str(ngs_emg_time_tmp) + ':30'
+                data['ngs_emg_time'].append(str(ngs_emg_time_tmp) + ':30')
         elif content.find("#PSO2NGS緊急通知") >= 0 and content.find("30分") == -1: #处理整点紧急
             if time.localtime().tm_hour == 23:
-                last_ngs_emg_time = '00:00'
+                data['ngs_emg_time'].append('00:00')
             else:
                 ngs_emg_time_tmp = time.localtime().tm_hour + 1
-                last_ngs_emg_time = str(ngs_emg_time_tmp) + ':00'
+                data['ngs_emg_time'].append(str(ngs_emg_time_tmp) + ':00')
         content = re.sub(r"\nVer.*緊急通知","",content)#去掉最后一行
         content = ngs_translate(content)#翻译内容
     elif content.find("#PSO2") >= 0:
@@ -613,9 +615,20 @@ async def send_sukeiru_detail(bot, ev):
         await bot.send(ev, "今日蓝矿点细节图尚未获取，请等待刷新\n刷新时间为每小时5、15、45分")  
         
 @sv.on_rex(r'^有紧急嘛|有紧急吗|最近紧急|有无紧急|近期紧急$')
-async def send_scheduled_emg(bot, ev):
-    if last_ngs_emg_time != "":
-        msg = f"最近一次NGS紧急任务为北京时间 {last_ngs_emg_time}"
+async def send_last_ngs_emg(bot, ev):
+    if data['ngs_emg_time']:
+        msg = f"最近一次NGS紧急任务的时间为 {data['ngs_emg_time'][len(data['ngs_emg_time'])-1]}"
+    else:
+        msg = "暂无数据"
+    await bot.send(ev, msg)
+
+@sv.on_fullmatch('紧急记录')
+async def send_ngs_emg_log(bot, ev):
+    if data['ngs_emg_time']:
+        emg_time = ""
+        for i in range(len(data['ngs_emg_time'])-1,-1,-1):
+            emg_time += f"\n{data['ngs_emg_time'][i]}"
+        msg = f"今日NGS紧急任务的发生时间记录：\n{emg_time}"
     else:
         msg = "暂无数据"
     await bot.send(ev, msg)
@@ -680,3 +693,8 @@ async def rss_cmd(bot, ev):
 @sv.scheduled_job('cron', second='30')
 async def job():
     await group_process()
+
+@sv.scheduled_job('cron', hour = '5' ,second='0')
+async def clear_ngs_emg_time():
+    data['ngs_emg_time'].clear()
+    save_data()
