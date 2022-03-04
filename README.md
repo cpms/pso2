@@ -6,7 +6,7 @@
 * 获取每日土豆和每日蓝矿图
 * PSO2 日文验证码识别（使用 [pso2s.com](http://pso2s.com) 提供的服务）
 
-本插件使用 RSSHub 来订阅推特的紧急预告信息，默认使用网上公开的 RSSHub 服务器，强烈建议有条件的可以自行搭建
+本插件使用 RSSHub 来订阅推特的紧急预告信息，默认使用网上公开的 RSSHub 服务器，建议有条件的可以自行搭建
 
 如自行搭建 RSSHub，需要申请推特开发者权限并配置好 RSSHub 来订阅推特的信息，详见 [RSSHub 官方文档](https://docs.rsshub.app/install/#pei-zhi-bu-fen-rss-mo-kuai-pei-zhi)
 

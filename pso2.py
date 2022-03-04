@@ -238,6 +238,11 @@ def remove_html(content):
             else:
                 ngs_emg_time_tmp = time.localtime().tm_hour + 1
                 data['ngs_emg_time'].append(str(ngs_emg_time_tmp) + ':00')
+        temp_list = []#紧急记录去重
+        for i in data['ngs_emg_time']:
+            if i not in temp_list:
+                temp_list.append(i)
+        data['ngs_emg_time'] = temp_list
         content = re.sub(r"\nVer.*緊急通知","",content)#去掉最后一行
         content = ngs_translate(content)#翻译内容
     elif content.find("#PSO2") >= 0:
