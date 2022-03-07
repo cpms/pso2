@@ -699,7 +699,7 @@ async def rss_cmd(bot, ev):
 async def job():
     await group_process()
 
-@sv.scheduled_job('cron', hour = '5' ,second='0')
+@sv.scheduled_job('cron', hour = '5' ,minute = '0', second='0')
 async def clear_ngs_emg_time():
     data['ngs_emg_time'].clear()
     save_data()
