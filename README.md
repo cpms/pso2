@@ -3,7 +3,7 @@
 * 推送 NGS 和 PSO2 的紧急预告信息
 * 紧急预告信息经过格式化，翻译成中文并且时间自动转换成北京时间
 * 记录 NGS 紧急任务的发生时间
-* 获取每日土豆和每日蓝矿图
+* 获取每日土豆
 * PSO2 日文验证码识别（使用 [pso2s.com](http://pso2s.com) 提供的服务）
 
 本插件使用 RSSHub 来订阅推特的紧急预告信息，默认使用网上公开的 RSSHub 服务器，建议有条件的可以自行搭建
@@ -12,7 +12,7 @@
 
 由于旧 PSO2 已经停止更新，本插件主要维护 NGS 相关的功能
 
-**下载推特的土豆图和蓝矿图需要配置科学上网，自行搭建的 RSSHub 也需要科学上网才可以访问推特的 API，详见 [RSSHub 官方文档](https://docs.rsshub.app/install/#pei-zhi-dai-li-pei-zhi)**
+**下载推特的土豆图需要配置科学上网，自行搭建的 RSSHub 也需要科学上网才可以访问推特的 API，详见 [RSSHub 官方文档](https://docs.rsshub.app/install/#pei-zhi-dai-li-pei-zhi)**
 
 # 安装
 1. 在 HoshinoBot 的 `modules` 目录下克隆`git clone https://github.com/cpms/pso2.git`
@@ -22,10 +22,10 @@
 5. 再次启动 HoshinoBot
 
 # 初始化
-在需要提供服务的Q群使用命令订阅以下链接，分别是 **NGS 紧急通知**、**土豆蓝矿图**、**PSO2 紧急通知**
+在需要提供服务的Q群使用命令订阅以下链接（注意订阅链接有更新），分别是 **NGS 紧急通知**、**PSO2 紧急通知**
 ```
 pso2cmd add http://rss.shab.fun/twitter/user/Pso2ngsB?filter=PSO2NGS緊急通知
-pso2cmd add http://rss.shab.fun/twitter/user/YukiPikochi?filter=アルファリアクター.*フォトンスケイル
+pso2cmd add http://rss.shab.fun/twitter/user/YukiPikochi?filter=%23アルファリアクター
 pso2cmd add http://rss.shab.fun/user/pso2_emg_hour
 ```
 **因为本插件针对以上 3 个源的信息进行定制解析，所以不建议使用本插件订阅其他 RSS 源**
@@ -36,8 +36,6 @@ pso2cmd add http://rss.shab.fun/user/pso2_emg_hour
 * `pso2cmd remove 序号` : 删除订阅列表指定项
 * `今日土豆`：发送最新土豆图
 * `今日土豆细节`：发送最新土豆细节图
-* `今日蓝矿`：发送最新蓝矿图
-* `今日蓝矿细节`：发送最新蓝矿图细节图
 * `最近紧急`：发送最近一次 NGS 紧急任务的发生时间
 * `紧急记录`：发送今日 NGS 紧急任务的时间记录
 * `验证码识别`：在此关键词后面接上 SEGA 的验证码图片，尝试进行识别
@@ -51,7 +49,7 @@ PSO2NGS暴雨和紧急通知机器人@[PSO2 NGS Bot](https://twitter.com/Pso2ngs
 
 PSO2紧急预告机器人@[PSO2 １時間前緊急予告BOT](https://twitter.com/pso2_emg_hour)
 
-提供每日土豆和蓝矿图的推主@[ピコチ](https://twitter.com/YukiPikochi)
+提供每日土豆的推主@[ピコチ](https://twitter.com/YukiPikochi)
 
 PSO2 日文验证码识别服务 [pso2s.com](http://pso2s.com)
 

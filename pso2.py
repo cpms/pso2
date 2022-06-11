@@ -35,14 +35,12 @@ pso2cmd add rss地址 : 添加rss订阅
 pso2cmd remove 序号 : 删除订阅列表指定项
 今日土豆：发送最新土豆图
 今日土豆细节：发送最新土豆细节图
-今日蓝矿：发送最新蓝矿图
-今日蓝矿细节：发送最新蓝矿图细节图
 最近紧急：发送最近一次NGS紧急任务的发生时间
 紧急记录：发送今日NGS紧急任务的时间记录
 验证码识别：在此关键词后面接上SEGA的验证码图片，尝试进行识别
 '''
 
-sv = hoshino.Service('pso2', bundle='pso2ngs紧急预告、每日土豆图、每日蓝矿图、PSO2日文验证码识别', help_= HELP_MSG)
+sv = hoshino.Service('pso2', bundle='pso2ngs紧急预告、每日土豆图、PSO2日文验证码识别', help_= HELP_MSG)
 alpha_img_base64 = ""
 sukeiru_img_base64 = ""
 alpha_detail_base64 = ""
@@ -264,7 +262,7 @@ def remove_lf(content):
     text = text.rstrip()
     return text
 
-async def generate_pso2_image(url_list,mode):#mode0=土豆，mode1=土豆细节，mode2=蓝矿，mode3=蓝矿细节
+async def generate_pso2_image(url_list,mode):#mode0=土豆，mode1=土豆细节
     try:
         url = html.unescape(url_list[mode])
     except:
@@ -404,7 +402,7 @@ async def get_rss_news(rss_url):
     last_time = data['last_time'][rss_url]
 
     for item in feed["entries"]:
-        if get_published_time(item) > last_time or (first_start_flag and item['description'].find("フォトンスケイル") != -1): #插件启动后的第一次获取土豆和蓝矿图
+        if get_published_time(item) > last_time or (first_start_flag and item['description'].find("#アルファリアクター") != -1): #插件启动后的第一次获取土豆
             if first_start_flag:
                 first_start_flag = False
             summary = item['summary']
@@ -412,29 +410,16 @@ async def get_rss_news(rss_url):
             i = summary.find('//转发自')
             if i > 0:
                 summary = summary[:i]
-            if item['description'].find("フォトンスケイル") != -1: #处理土豆和蓝矿图
+            if item['description'].find("#アルファリアクター") != -1: #处理土豆
                 image_urls = get_image_url(summary)
-                p1 = 0;p2 = 1;p3 = 2;p4 = 3
-                if len(image_urls) == 3:#处理只有3张图的情况
-                    p2 = None;p3 = 1;p4 = 2
-                alpha_img_bin = await generate_pso2_image(image_urls,p1)
-                alpha_detail_bin = await generate_pso2_image(image_urls,p2)
-                sukeiru_img_bin = await generate_pso2_image(image_urls,p3)
-                sukeiru_detail_bin = await generate_pso2_image(image_urls,p4)
+                alpha_img_bin = await generate_pso2_image(image_urls,0)
+                alpha_detail_bin = await generate_pso2_image(image_urls,1)
                 try:
                     alpha_img_base64 = f"base64://{base64.b64encode(add_salt(alpha_img_bin)).decode()}"
                 except:
                     pass
                 try:
                     alpha_detail_base64 = f"base64://{base64.b64encode(add_salt(alpha_detail_bin)).decode()}"
-                except:
-                    pass
-                try:
-                    sukeiru_img_base64 = f"base64://{base64.b64encode(add_salt(sukeiru_img_bin)).decode()}"
-                except:
-                    pass
-                try:
-                    sukeiru_detail_base64 = f"base64://{base64.b64encode(add_salt(sukeiru_detail_bin)).decode()}"
                 except:
                     pass
                 news = {
@@ -515,7 +500,7 @@ async def group_process():
                     else:
                         msg = format_msg(news)
                     try:
-                        if msg.find("フォトンスケイル") > 0 or msg.find("緊急クエスト予告＞ #PSO2") > 0: #不发送土豆图、无紧急PSO2预告
+                        if msg.find("#アルファリアクター") > 0 or msg.find("緊急クエスト予告＞ #PSO2") > 0: #不发送土豆图、无紧急PSO2预告
                             pass
                         else:
                             await bot.send_group_msg(group_id=gid, message=msg)
@@ -587,7 +572,7 @@ async def get_captcha(bot, ev):
         captcha_img_url = captcha_img.group(2)
         captcha_img_bin = await query_data(captcha_img_url, "")
         result = await post_captcha_img(captcha_img_bin)
-        await bot.send(ev,f'验证码识别结果：\n{result}\nPowered By pso2s.com')
+        await bot.send(ev,f'验证码识别结果：\n{result}\n\nPowered By pso2s.com')
     else:
         await bot.send(ev,'没有识别到图片，请在关键词后面直接加上图片发送')
 
@@ -598,26 +583,12 @@ async def send_alpha_img(bot, ev):
     else:
         await bot.send(ev, "今日土豆图尚未获取，请等待刷新\n刷新时间为每小时5、15、45分")
 
-@sv.on_rex(r'^(每日|今日|今天|最新)(舍利子|蓝白矿|蓝矿)$')
-async def send_sukeiru_img(bot, ev):
-    if sukeiru_img_base64 != "":
-        await bot.send(ev, f'[CQ:image,file={sukeiru_img_base64}]')
-    else:
-        await bot.send(ev, "今日蓝矿点图尚未获取，请等待刷新\n刷新时间为每小时5、15、45分")
-
 @sv.on_rex(r'^(每日|今日|今天|最新)土豆(详细|细节)$')
 async def send_alpha_detail(bot, ev):
     if alpha_detail_base64 != "":
         await bot.send(ev, f'[CQ:image,file={alpha_detail_base64}]')
     else:
         await bot.send(ev, "今日土豆细节图尚未获取，请等待刷新\n刷新时间为每小时5、15、45分")
-
-@sv.on_rex(r'^(每日|今日|今天|最新)(舍利子|蓝白矿|蓝矿)(详细|细节)$')
-async def send_sukeiru_detail(bot, ev):
-    if sukeiru_detail_base64 != "":
-        await bot.send(ev, f'[CQ:image,file={sukeiru_detail_base64}]')
-    else:
-        await bot.send(ev, "今日蓝矿点细节图尚未获取，请等待刷新\n刷新时间为每小时5、15、45分")  
         
 @sv.on_rex(r'^有紧急嘛|有紧急吗|最近紧急|有无紧急|近期紧急$')
 async def send_last_ngs_emg(bot, ev):
