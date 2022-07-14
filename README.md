@@ -22,11 +22,11 @@
 5. 再次启动 HoshinoBot
 
 # 初始化
-在需要提供服务的Q群使用命令订阅以下链接（注意订阅链接有更新），分别是 **NGS 紧急通知**、**PSO2 紧急通知**
+在需要提供服务的Q群使用命令订阅以下链接（注意订阅链接有更新），分别是 **NGS 紧急通知**、**NGS 土豆图**、**PSO2 紧急通知**
 ```
-pso2cmd add http://rss.shab.fun/twitter/user/Pso2ngsB?filter=PSO2NGS緊急通知
-pso2cmd add http://rss.shab.fun/twitter/user/YukiPikochi?filter=%23アルファリアクター
-pso2cmd add http://rss.shab.fun/user/pso2_emg_hour
+pso2cmd add https://rss.shab.fun/twitter/user/Pso2ngsB?filter=PSO2NGS緊急通知
+pso2cmd add https://rss.shab.fun/twitter/user/YukiPikochi?filter=%23アルファリアクター
+pso2cmd add https://rss.shab.fun/twitter/user/pso2_emg_hour
 ```
 **因为本插件针对以上 3 个源的信息进行定制解析，所以不建议使用本插件订阅其他 RSS 源**
 
