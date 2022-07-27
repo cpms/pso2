@@ -1,2 +1,2 @@
-feedparser~=5.2
-pillow~=6.2
+feedparser~=6.0
+pillow~=9.2

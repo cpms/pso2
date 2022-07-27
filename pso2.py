@@ -13,7 +13,7 @@ import json
 import time
 import random
 import string
-
+import platform
 import sys
 import html
 
@@ -86,7 +86,10 @@ def load_data():
 load_data()
 
 default_rss = []
-asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())#解决aiohttp使用代理后参数出错
+
+if platform.system().lower() == 'windows':#解决windows下aiohttp使用代理后参数出错
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+    
 async def query_data(url, proxy=''):
     try:
         async with aiohttp.ClientSession() as session:
@@ -125,9 +128,10 @@ def get_image_url(desc):
     return imgs
 
 def ngs_translate(content):
-    content = content.replace("緊急通知","紧急任务通知")
-    content = content.replace("緊急クエストが発生します","有紧急任务")
-    content = content.replace("ステージライブが開催します","有演唱会")
+    content = content.replace("予告：『緊急クエスト』","NGS预告：『紧急任务』\n")
+    content = content.replace("予告：『ステージライブ』","NGS预告：『演唱会』\n")
+    content = content.replace("開催","")
+    content = content.replace("└","：")
     return content
 
 def ngs_time(content):#转换成北京時間ngs
@@ -222,15 +226,16 @@ def remove_html(content):
     #移除html标签
     content = content.replace('<br>','\n')#转换换行符1
     content = content.replace('<br /><br />','\n')#转换换行符2
-    if content.find("#PSO2NGS緊急通知") >= 0:
+    if content.find("#PSO2NGS #緊急クエスト通知") >= 0:
         content = ngs_time(content)
-        if content.find("#PSO2NGS緊急通知") >= 0 and content.find("ステージライブ") >= 0: #处理半点紧急
+        #记录紧急任务时间到数据文件
+        if content.find("#PSO2NGS #緊急クエスト通知") >= 0 and content.find("ステージライブ") >= 0: #处理半点紧急
             if time.localtime().tm_hour == 23:
                 data['ngs_emg_time'].append('00:30')
             else:
                 ngs_emg_time_tmp = time.localtime().tm_hour + 1
                 data['ngs_emg_time'].append(str(ngs_emg_time_tmp) + ':30')
-        elif content.find("#PSO2NGS緊急通知") >= 0 and content.find("30分") == -1: #处理整点紧急
+        elif content.find("#PSO2NGS #緊急クエスト通知") >= 0 and content.find("30分") == -1: #处理整点紧急
             if time.localtime().tm_hour == 23:
                 data['ngs_emg_time'].append('00:00')
             else:
@@ -241,7 +246,7 @@ def remove_html(content):
             if i not in temp_list:
                 temp_list.append(i)
         data['ngs_emg_time'] = temp_list
-        content = re.sub(r"\nVer.*緊急通知","",content)#去掉最后一行
+        content = re.sub(r"\n#PSO2NGS #緊急クエスト通知","",content)#去掉最后一行
         content = ngs_translate(content)#翻译内容
     elif content.find("#PSO2") >= 0:
         content = re.sub(r"\(.*\)","",content,1)#去掉上一场紧急的信息

@@ -24,7 +24,7 @@
 # 初始化
 在需要提供服务的Q群使用命令订阅以下链接（注意订阅链接有更新），分别是 **NGS 紧急通知**、**NGS 土豆图**、**PSO2 紧急通知**
 ```
-pso2cmd add https://rss.shab.fun/twitter/user/Pso2ngsB?filter=PSO2NGS緊急通知
+pso2cmd add https://rss.shab.fun/twitter/user/PSO2NGS_JP
 pso2cmd add https://rss.shab.fun/twitter/user/YukiPikochi?filter=%23アルファリアクター
 pso2cmd add https://rss.shab.fun/twitter/user/pso2_emg_hour
 ```
@@ -41,15 +41,15 @@ pso2cmd add https://rss.shab.fun/twitter/user/pso2_emg_hour
 * `验证码识别`：在此关键词后面接上 SEGA 的验证码图片，尝试进行识别
 
 # 鸣谢
-rss 订阅插件原作者@[zyujs](https://github.com/zyujs)
+rss 订阅插件原作者[@zyujs](https://github.com/zyujs)
 
 本插件默认使用的 RSSHub 服务器 [rss.shab.fun](http://rss.shab.fun/)
 
-PSO2NGS暴雨和紧急通知机器人@[PSO2 NGS Bot](https://twitter.com/Pso2ngsB)
+PSO2NGS紧急预告机器人[@PSO2NGS 15分前緊急予告BOT](https://twitter.com/PSO2NGS_JP)
 
-PSO2紧急预告机器人@[PSO2 １時間前緊急予告BOT](https://twitter.com/pso2_emg_hour)
+PSO2紧急预告机器人[@PSO2 １時間前緊急予告BOT](https://twitter.com/pso2_emg_hour)
 
-提供每日土豆的推主@[ピコチ](https://twitter.com/YukiPikochi)
+提供每日土豆的推主[@ピコチ](https://twitter.com/YukiPikochi)
 
 PSO2 日文验证码识别服务 [pso2s.com](http://pso2s.com)
 
