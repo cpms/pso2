@@ -130,8 +130,12 @@ def get_image_url(desc):
 def ngs_translate(content):
     content = content.replace("予告：『緊急クエスト』","NGS预告：『紧急任务』\n")
     content = content.replace("予告：『ステージライブ』","NGS预告：『演唱会』\n")
+    content = content.replace("予告：『ムービーライブ』","NGS预告：『动画』\n")
+    content = content.replace("ムービーライブ終了後に","动画结束后")
+    content = content.replace("緊急クエストは発生しません","不会发生紧急任务")
     content = content.replace("開催","")
     content = content.replace("└","：")
+    content = content.replace("&gt; ","")
     return content
 
 def ngs_time(content):#转换成北京時間ngs
