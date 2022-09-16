@@ -95,7 +95,8 @@ async def query_data(url, proxy=''):
         async with aiohttp.ClientSession() as session:
             async with session.get(url, proxy=proxy) as resp:
                 return await resp.read()
-    except:
+    except Exception as e:
+        sv.logger.error(e)
         return None
 
 async def post_captcha_img(data):
@@ -134,8 +135,6 @@ def ngs_translate(content):
     content = content.replace("ムービーライブ終了後に","动画结束后")
     content = content.replace("緊急クエストは発生しません","不会发生紧急任务")
     content = content.replace("開催","")
-    content = content.replace("└","：")
-    content = content.replace("&gt; ","")
     return content
 
 def ngs_time(content):#转换成北京時間ngs
@@ -288,6 +287,8 @@ async def generate_pso2_image(url_list,mode):#mode0=土豆，mode1=土豆细节
             raw_images = im
         except:
             pass
+    else:
+        return None
 
     io = BytesIO()
     raw_images.save(io, 'png')
@@ -399,7 +400,7 @@ async def get_rss_news(rss_url):
         return news_list
     feed = feedparser.parse(res)
     if feed['bozo'] != 0:
-        sv.logger.info(f'rss解析失败 {rss_url}')
+        sv.logger.error(f'rss解析失败 {rss_url}')
         return news_list
     if len(feed['entries']) == 0:
         return news_list
@@ -473,10 +474,6 @@ def add_salt(data):
     return data + bytes(salt, encoding="utf8")
 
 def format_msg(news):
-    #msg = f"{news['feed_title']}更新:"
-    #if not check_title_in_content(news['title'], news['content']):
-        #msg += f"\n{news['title']}"async
-    #msg += f"\n----------\n{remove_lf(news['description'])}"
     msg = remove_lf(news['description'])
     if news['image']:
         base64_str = f"base64://{base64.b64encode(add_salt(news['image'])).decode()}"
@@ -514,7 +511,7 @@ async def group_process():
                         else:
                             await bot.send_group_msg(group_id=gid, message=msg)
                     except:
-                        sv.logger.info(f'群 {gid} 推送失败')
+                        sv.logger.error(f'群 {gid} 推送失败')
                 await asyncio.sleep(1)
 
 async def rss_add(group_id, rss_url):
