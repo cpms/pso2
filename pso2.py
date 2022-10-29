@@ -229,6 +229,7 @@ def remove_html(content):
     #移除html标签
     content = content.replace('<br>','\n')#转换换行符1
     content = content.replace('<br /><br />','\n')#转换换行符2
+    content = content.replace('<br />','\n')#转换换行符3
     if content.find("#PSO2NGS #緊急クエスト通知") >= 0:
         content = ngs_time(content)
         #记录紧急任务时间到数据文件
@@ -580,7 +581,7 @@ async def get_captcha(bot, ev):
         result = await post_captcha_img(captcha_img_bin)
         await bot.send(ev,f'验证码识别结果：\n{result}\n\nPowered By pso2s.com')
     else:
-        await bot.send(ev,'没有识别到图片，请在关键词后面直接加上图片发送')
+        await bot.send(ev,'没有识别到验证码图片，请在“验证码识别”关键词后面直接加上图片发送\n\n验证码图片请从网页上直接拖拽到QQ窗口或保存到本地再发送，请勿截图发送')
 
 @sv.on_rex(r'^(每日|今日|今天|最新)土豆$')
 async def send_alpha_img(bot, ev):
@@ -672,7 +673,7 @@ async def rss_cmd(bot, ev):
     
 
 #@sv.scheduled_job('cron', minute = '5,45-55,15-20', second='25')
-@sv.scheduled_job('cron', second='30')
+@sv.scheduled_job('cron', second='5')
 async def job():
     await group_process()
 
