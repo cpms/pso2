@@ -230,7 +230,7 @@ def remove_html(content):
     content = content.replace('<br>','\n')#转换换行符1
     content = content.replace('<br /><br />','\n')#转换换行符2
     content = content.replace('<br />','\n')#转换换行符3
-    if content.find("#PSO2NGS #緊急クエスト通知") >= 0:
+    if content.find("#PSO2NGS #緊急クエスト通知") >= 0:#处理NGS预告
         content = ngs_time(content)
         #记录紧急任务时间到数据文件
         if content.find("#PSO2NGS #緊急クエスト通知") >= 0 and content.find("ステージライブ") >= 0: #处理半点紧急
@@ -252,12 +252,14 @@ def remove_html(content):
         data['ngs_emg_time'] = temp_list
         content = re.sub(r"\n#PSO2NGS #緊急クエスト通知","",content)#去掉最后一行
         content = ngs_translate(content)#翻译内容
-    elif content.find("#PSO2") >= 0:
+    elif content.find("#PSO2") >= 0:#处理PSO2预告
         content = re.sub(r"\(.*\)","",content,1)#去掉上一场紧急的信息
         content = re.sub(r"＞\n #","＞\n予告無し #",content)#处理无预告1
         content = re.sub(r"＞\n【","＞\n予告無し\n【",content)#处理无预告2
         content = content.replace("<br><br>","<br>")#去除2次换行
         content = pso2_time(content)#转换时间
+    elif content.find("システムダウンの可能性があります。") >= 0:#处理预告BOT故障或维护
+        content.replace("システムダウンの可能性があります。","NGS紧急预告系统故障或游戏服务器维护")
     p = re.compile('<[^>]+>')
     content = p.sub("", content)
     return content
@@ -588,14 +590,14 @@ async def send_alpha_img(bot, ev):
     if alpha_img_base64 != "":
         await bot.send(ev, f'[CQ:image,file={alpha_img_base64}]')
     else:
-        await bot.send(ev, "今日土豆图尚未获取，请等待刷新\n刷新时间为每小时5、15、45分")
+        await bot.send(ev, "今日土豆图尚未获取或获取失败\n请等待几分钟后重试")
 
 @sv.on_rex(r'^(每日|今日|今天|最新)土豆(详细|细节)$')
 async def send_alpha_detail(bot, ev):
     if alpha_detail_base64 != "":
         await bot.send(ev, f'[CQ:image,file={alpha_detail_base64}]')
     else:
-        await bot.send(ev, "今日土豆细节图尚未获取，请等待刷新\n刷新时间为每小时5、15、45分")
+        await bot.send(ev, "今日土豆细节图尚未获取或获取失败\n请等待几分钟后重试")
         
 @sv.on_rex(r'^有紧急嘛|有紧急吗|最近紧急|有无紧急|近期紧急$')
 async def send_last_ngs_emg(bot, ev):
