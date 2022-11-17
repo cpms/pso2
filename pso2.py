@@ -138,56 +138,78 @@ def ngs_translate(content):
     return content
 
 def ngs_time(content):#转换成北京時間ngs
-    content = content.replace("01:00","00点")
-    content = content.replace("02:00","01点")
-    content = content.replace("03:00","02点")
-    content = content.replace("04:00","03点")
-    content = content.replace("05:00","04点")
-    content = content.replace("06:00","05点")
-    content = content.replace("07:00","06点")
-    content = content.replace("08:00","07点")
-    content = content.replace("09:00","08点")
-    content = content.replace("10:00","09点")
-    content = content.replace("11:00","10点")
-    content = content.replace("12:00","11点")
-    content = content.replace("13:00","12点")
-    content = content.replace("14:00","13点")
-    content = content.replace("15:00","14点")
-    content = content.replace("16:00","15点")
-    content = content.replace("17:00","16点")
-    content = content.replace("18:00","17点")
-    content = content.replace("19:00","18点")
-    content = content.replace("20:00","19点")
-    content = content.replace("21:00","20点")
-    content = content.replace("22:00","21点")
-    content = content.replace("23:00","22点")
-    content = content.replace("00:00","23点")
-    
-    content = content.replace("01:30","00点30分")
-    content = content.replace("02:30","01点30分")
-    content = content.replace("03:30","02点30分")
-    content = content.replace("04:30","03点30分")
-    content = content.replace("05:30","04点30分")
-    content = content.replace("06:30","05点30分")
-    content = content.replace("07:30","06点30分")
-    content = content.replace("08:30","07点30分")
-    content = content.replace("09:30","08点30分")
-    content = content.replace("10:30","09点30分")
-    content = content.replace("11:30","10点30分")
-    content = content.replace("12:30","11点30分")
-    content = content.replace("13:30","12点30分")
-    content = content.replace("14:30","13点30分")
-    content = content.replace("15:30","14点30分")
-    content = content.replace("16:30","15点30分")
-    content = content.replace("17:30","16点30分")
-    content = content.replace("18:30","17点30分")
-    content = content.replace("19:30","18点30分")
-    content = content.replace("20:30","19点30分")
-    content = content.replace("21:30","20点30分")
-    content = content.replace("22:30","21点30分")
-    content = content.replace("23:30","22点30分")
-    content = content.replace("00:30","23点30分")
-    return content
+    if content.find(" 00:") >= 0:
+        content = content.replace(" 00:"," 23:")
+        return content
+    elif content.find(" 01:") >= 0:
+        content = content.replace(" 01:"," 00:")
+        return content
+    elif content.find(" 02:") >= 0:
+        content = content.replace(" 02:"," 01:")
+        return content
+    elif content.find(" 03:") >= 0:
+        content = content.replace(" 03:"," 02:")
+        return content
+    elif content.find(" 04:") >= 0:
+        content = content.replace(" 04:"," 03:")
+        return content
+    elif content.find(" 05:") >= 0:
+        content = content.replace(" 05:"," 04:")
+        return content
+    elif content.find(" 06:") >= 0:
+        content = content.replace(" 06:"," 05:")
+        return content
+    elif content.find(" 07:") >= 0:
+        content = content.replace(" 07:"," 06:")
+        return content
+    elif content.find(" 08:") >= 0:
+        content = content.replace(" 08:"," 07:")
+        return content
+    elif content.find(" 09:") >= 0:
+        content = content.replace(" 09:"," 08:")
+        return content
+    elif content.find(" 10:") >= 0:
+        content = content.replace(" 10:"," 09:")
+        return content
+    elif content.find(" 11:") >= 0:
+        content = content.replace(" 11:"," 10:")
+        return content
+    elif content.find(" 12:") >= 0:
+        content = content.replace(" 12:"," 11:")
+        return content
+    elif content.find(" 13:") >= 0:
+        content = content.replace(" 13:"," 12:")
+        return content
+    elif content.find(" 14:") >= 0:
+        content = content.replace(" 14:"," 13:")
+        return content
+    elif content.find(" 15:") >= 0:
+        content = content.replace(" 15:"," 14:")
+        return content
+    elif content.find(" 16:") >= 0:
+        content = content.replace(" 16:"," 15:")
+        return content
+    elif content.find(" 17:") >= 0:
+        content = content.replace(" 17:"," 16:")
+        return content
+    elif content.find(" 18:") >= 0:
+        content = content.replace(" 18:"," 17:")
+        return content
+    elif content.find(" 19:") >= 0:
+        content = content.replace(" 19:"," 18:")
+        return content
+    elif content.find(" 20:") >= 0:
+        content = content.replace(" 20:"," 19:")
+        return content
+    elif content.find(" 21:") >= 0:
+        content = content.replace(" 21:"," 20:")
+        return content
+    elif content.find(" 22:") >= 0:
+        content = content.replace(" 22:"," 21:")
+        return content
+    elif content.find(" 23:") >= 0:
+        content = content.replace(" 23:"," 22:")
+        return content
 
 def pso2_time(content):#转换成北京時間pso2
     count01 = 0
@@ -252,7 +274,7 @@ def remove_html(content):
         data['ngs_emg_time'] = temp_list
         content = re.sub(r"\n#PSO2NGS #緊急クエスト通知","",content)#去掉最后一行
         content = ngs_translate(content)#翻译内容
-    elif content.find("#PSO2") >= 0:#处理PSO2预告
+    elif content.find(" #PSO2 ") >= 0:#处理PSO2预告
         content = re.sub(r"\(.*\)","",content,1)#去掉上一场紧急的信息
         content = re.sub(r"＞\n #","＞\n予告無し #",content)#处理无预告1
         content = re.sub(r"＞\n【","＞\n予告無し\n【",content)#处理无预告2
@@ -260,6 +282,9 @@ def remove_html(content):
         content = pso2_time(content)#转换时间
     elif content.find("システムダウンの可能性があります。") >= 0:#处理预告BOT故障或维护
         content.replace("システムダウンの可能性があります。","NGS紧急预告系统故障或游戏服务器维护")
+    elif content.find("異常気象通知") >= 0:#处理异常天气通知
+        content = ngs_time(content)
+        content = re.findall(r"P.*]",content,flags=re.S)[0]
     p = re.compile('<[^>]+>')
     content = p.sub("", content)
     return content
@@ -599,7 +624,11 @@ async def send_alpha_detail(bot, ev):
     else:
         await bot.send(ev, "今日土豆细节图尚未获取或获取失败\n请等待几分钟后重试")
         
-@sv.on_rex(r'^有紧急嘛|有紧急吗|最近紧急|有无紧急|近期紧急$')
+@sv.on_fullmatch(r'有紧急嘛')
+@sv.on_fullmatch(r'有紧急吗')
+@sv.on_fullmatch(r'最近紧急')
+@sv.on_fullmatch(r'有无紧急')
+@sv.on_fullmatch(r'近期紧急')
 async def send_last_ngs_emg(bot, ev):
     if data['ngs_emg_time']:
         msg = f"最近一次NGS紧急任务的时间为 {data['ngs_emg_time'][len(data['ngs_emg_time'])-1]}"
