@@ -261,7 +261,7 @@ def remove_html(content):
             else:
                 ngs_emg_time_tmp = time.localtime().tm_hour + 1
                 data['ngs_emg_time'].append(str(ngs_emg_time_tmp) + ':30')
-        elif content.find("#PSO2NGS #緊急クエスト通知") >= 0 and content.find("30分") == -1: #处理整点紧急
+        elif content.find("#PSO2NGS #緊急クエスト通知") >= 0 and content.find(":30") == -1: #处理整点紧急
             if time.localtime().tm_hour == 23:
                 data['ngs_emg_time'].append('00:00')
             else:
@@ -274,7 +274,7 @@ def remove_html(content):
         data['ngs_emg_time'] = temp_list
         content = re.sub(r"\n#PSO2NGS #緊急クエスト通知","",content)#去掉最后一行
         content = ngs_translate(content)#翻译内容
-    elif content.find(" #PSO2 ") >= 0:#处理PSO2预告
+    elif content.find(" #PSO2") >= 0:#处理PSO2预告
         content = re.sub(r"\(.*\)","",content,1)#去掉上一场紧急的信息
         content = re.sub(r"＞\n #","＞\n予告無し #",content)#处理无预告1
         content = re.sub(r"＞\n【","＞\n予告無し\n【",content)#处理无预告2
@@ -703,8 +703,8 @@ async def rss_cmd(bot, ev):
     await bot.send(ev, msg)
     
 
-#@sv.scheduled_job('cron', minute = '5,45-55,15-20', second='25')
-@sv.scheduled_job('cron', second='5')
+@sv.scheduled_job('cron', minute = '5,45-50,15-20', second='5')
+#@sv.scheduled_job('cron', second='5')
 async def job():
     await group_process()
 
