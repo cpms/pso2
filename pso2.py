@@ -255,13 +255,13 @@ def remove_html(content):
     if content.find("#PSO2NGS #緊急クエスト通知") >= 0:#处理NGS预告
         content = ngs_time(content)
         #记录紧急任务时间到数据文件
-        if content.find("#PSO2NGS #緊急クエスト通知") >= 0 and content.find("ステージライブ") >= 0: #处理半点紧急
+        if content.find("#PSO2NGS #緊急クエスト通知") >= 0 and content.find("ステージライブ") >= 0 and content.find("予告：") >= 0: #处理半点紧急
             if time.localtime().tm_hour == 23:
                 data['ngs_emg_time'].append('00:30')
             else:
                 ngs_emg_time_tmp = time.localtime().tm_hour + 1
                 data['ngs_emg_time'].append(str(ngs_emg_time_tmp) + ':30')
-        elif content.find("#PSO2NGS #緊急クエスト通知") >= 0 and content.find(":30") == -1: #处理整点紧急
+        elif content.find("#PSO2NGS #緊急クエスト通知") >= 0 and content.find(":30") == -1 and content.find("予告：") >= 0: #处理整点紧急
             if time.localtime().tm_hour == 23:
                 data['ngs_emg_time'].append('00:00')
             else:
@@ -534,7 +534,7 @@ async def group_process():
                     else:
                         msg = format_msg(news)
                     try:
-                        if msg.find("#アルファリアクター") > 0 or msg.find("緊急クエスト予告＞ #PSO2") > 0: #不发送土豆图、无紧急PSO2预告
+                        if msg.find("#アルファリアクター") > 0 or msg.find("緊急クエスト予告＞\n予告無し #PSO2") > 0: #不发送土豆图、无紧急PSO2预告
                             pass
                         else:
                             await bot.send_group_msg(group_id=gid, message=msg)
