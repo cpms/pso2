@@ -135,6 +135,16 @@ def ngs_translate(content):
     content = content.replace("ムービーライブ終了後に","动画结束后")
     content = content.replace("緊急クエストは発生しません","不会发生紧急任务")
     content = content.replace("開催","")
+    content = content.replace("資源採掘リグ防衛戦","資源採掘リグ防衛戦(TD)")
+    content = content.replace("統制型ドールズ討伐戦","統制型ドールズ討伐戦(阿足)")
+    content = content.replace("ネクス・ヴェラ討伐戦","ネクス・ヴェラ討伐戦(龙)")
+    content = content.replace("ダークファルス迎撃戦","ダークファルス迎撃戦(DF)")
+    content = content.replace("スナイダル・ヴェラ討伐戦","スナイダル・ヴェラ討伐戦(吉他)")
+    content = content.replace("レヌス・ヴェラ討伐戦","レヌス・ヴェラ討伐戦(沙虫)")
+    content = content.replace("クロコダラス・ヴェラ討伐戦","クロコダラス・ヴェラ討伐戦(鳄鱼)")
+    content = content.replace("アムス・ヴェラ討伐戦","アムス・ヴェラ討伐戦(小龙人)")
+    content = content.replace("ドルドリス・ヴェラ討伐戦","ドルドリス・ヴェラ討伐戦(钻头)")
+    content = content.replace("ニルス・ヴェラ討伐戦","ニルス・ヴェラ討伐戦(长颈鹿)")
     return content
 
 def ngs_time(content):#转换成北京時間ngs
@@ -624,11 +634,7 @@ async def send_alpha_detail(bot, ev):
     else:
         await bot.send(ev, "今日土豆细节图尚未获取或获取失败\n请等待几分钟后重试")
         
-@sv.on_fullmatch(r'有紧急嘛')
-@sv.on_fullmatch(r'有紧急吗')
-@sv.on_fullmatch(r'最近紧急')
-@sv.on_fullmatch(r'有无紧急')
-@sv.on_fullmatch(r'近期紧急')
+@sv.on_fullmatch('有紧急嘛','有紧急吗','最近紧急','有无紧急','近期紧急')
 async def send_last_ngs_emg(bot, ev):
     if data['ngs_emg_time']:
         msg = f"最近一次NGS紧急任务的时间为 {data['ngs_emg_time'][len(data['ngs_emg_time'])-1]}"
