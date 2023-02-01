@@ -145,6 +145,7 @@ def ngs_translate(content):
     content = content.replace("アムス・ヴェラ討伐戦","アムス・ヴェラ討伐戦(小龙人)")
     content = content.replace("ドルドリス・ヴェラ討伐戦","ドルドリス・ヴェラ討伐戦(钻头)")
     content = content.replace("ニルス・ヴェラ討伐戦","ニルス・ヴェラ討伐戦(长颈鹿)")
+    content = content.replace("ハルフィリア湖の戦い","ハルフィリア湖の戦い(神盾DF)")
     return content
 
 def ngs_time(content):#转换成北京時間ngs
@@ -623,13 +624,15 @@ async def get_captcha(bot, ev):
 @sv.on_rex(r'^(每日|今日|今天|最新)土豆$')
 async def send_alpha_img(bot, ev):
     if alpha_img_base64 != "":
-        await bot.send(ev, f'[CQ:image,file={alpha_img_base64}]')
+        await bot.send(ev, f"正在获取，请稍等")
+        await bot.send(ev, f'[CQ:image,file={alpha_img_base64}]\n注：由于机制更改，土豆固定刷新在图中3个位置，每个位置刷新数量随机，总数14个')
     else:
         await bot.send(ev, "今日土豆图尚未获取或获取失败\n请等待几分钟后重试")
 
 @sv.on_rex(r'^(每日|今日|今天|最新)土豆(详细|细节)$')
 async def send_alpha_detail(bot, ev):
     if alpha_detail_base64 != "":
+        await bot.send(ev, f"正在获取，请稍等")
         await bot.send(ev, f'[CQ:image,file={alpha_detail_base64}]')
     else:
         await bot.send(ev, "今日土豆细节图尚未获取或获取失败\n请等待几分钟后重试")
@@ -713,8 +716,8 @@ async def rss_cmd(bot, ev):
 #@sv.scheduled_job('cron', second='5')
 async def job():
     await group_process()
-
-@sv.scheduled_job('cron', hour = '5' ,minute = '0', second='0')
+#每日任务北京时间3点刷新，所以以这个时间点为分隔
+@sv.scheduled_job('cron', hour = '2' ,minute = '44', second='0')
 async def clear_ngs_emg_time():
     data['ngs_emg_time'].clear()
     save_data()
