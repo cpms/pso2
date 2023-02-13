@@ -16,6 +16,8 @@ import string
 import platform
 import sys
 import html
+import discord
+import threading
 
 rss_news = {}
 
@@ -27,12 +29,15 @@ data = {
     'group_rss': {},
     'group_mode': {},
     'ngs_emg_time': [],
+    'discord_token': '',
+    'ngs_emg_push_group': [],
 }
 
 HELP_MSG = '''命令前缀pso2cmd
 pso2cmd list : 查看订阅列表
 pso2cmd add rss地址 : 添加rss订阅
 pso2cmd remove 序号 : 删除订阅列表指定项
+pso2cmd ngs_emg_push enable|disable|status：启用|禁用|查看本群NGS紧急预告推送
 今日土豆：发送最新土豆图
 今日土豆细节：发送最新土豆细节图
 最近紧急：发送最近一次NGS紧急任务的发生时间
@@ -79,6 +84,11 @@ def load_data():
                 data['proxy_urls'] = d['proxy_urls']
             if 'ngs_emg_time' in d :
                 data['ngs_emg_time'] = d['ngs_emg_time']
+            if 'discord_token' in d :
+                data['discord_token'] = d['discord_token']
+            if 'ngs_emg_push_group' in d :
+                data['ngs_emg_push_group'] = d['ngs_emg_push_group']
+
     except:
         traceback.print_exc()
     global default_rss
@@ -146,81 +156,62 @@ def ngs_translate(content):
     content = content.replace("ドルドリス・ヴェラ討伐戦","ドルドリス・ヴェラ討伐戦(钻头)")
     content = content.replace("ニルス・ヴェラ討伐戦","ニルス・ヴェラ討伐戦(长颈鹿)")
     content = content.replace("ハルフィリア湖の戦い","ハルフィリア湖の戦い(神盾DF)")
+    #discord消息翻译
+    content = content.replace("緊急クエスト","紧急任务")
+    content = content.replace("ステージライブ","演唱会")
+    content = content.replace("ムービーライブ","动画")
     return content
 
 def ngs_time(content):#转换成北京時間ngs
     if content.find(" 00:") >= 0:
         content = content.replace(" 00:"," 23:")
-        return content
     elif content.find(" 01:") >= 0:
         content = content.replace(" 01:"," 00:")
-        return content
     elif content.find(" 02:") >= 0:
         content = content.replace(" 02:"," 01:")
-        return content
     elif content.find(" 03:") >= 0:
         content = content.replace(" 03:"," 02:")
-        return content
     elif content.find(" 04:") >= 0:
         content = content.replace(" 04:"," 03:")
-        return content
     elif content.find(" 05:") >= 0:
         content = content.replace(" 05:"," 04:")
-        return content
     elif content.find(" 06:") >= 0:
         content = content.replace(" 06:"," 05:")
-        return content
     elif content.find(" 07:") >= 0:
         content = content.replace(" 07:"," 06:")
-        return content
     elif content.find(" 08:") >= 0:
         content = content.replace(" 08:"," 07:")
-        return content
     elif content.find(" 09:") >= 0:
         content = content.replace(" 09:"," 08:")
-        return content
     elif content.find(" 10:") >= 0:
         content = content.replace(" 10:"," 09:")
-        return content
     elif content.find(" 11:") >= 0:
         content = content.replace(" 11:"," 10:")
-        return content
     elif content.find(" 12:") >= 0:
         content = content.replace(" 12:"," 11:")
-        return content
     elif content.find(" 13:") >= 0:
         content = content.replace(" 13:"," 12:")
-        return content
     elif content.find(" 14:") >= 0:
         content = content.replace(" 14:"," 13:")
-        return content
     elif content.find(" 15:") >= 0:
         content = content.replace(" 15:"," 14:")
-        return content
     elif content.find(" 16:") >= 0:
         content = content.replace(" 16:"," 15:")
-        return content
     elif content.find(" 17:") >= 0:
         content = content.replace(" 17:"," 16:")
-        return content
     elif content.find(" 18:") >= 0:
         content = content.replace(" 18:"," 17:")
-        return content
     elif content.find(" 19:") >= 0:
         content = content.replace(" 19:"," 18:")
-        return content
     elif content.find(" 20:") >= 0:
         content = content.replace(" 20:"," 19:")
-        return content
     elif content.find(" 21:") >= 0:
         content = content.replace(" 21:"," 20:")
-        return content
     elif content.find(" 22:") >= 0:
         content = content.replace(" 22:"," 21:")
-        return content
     elif content.find(" 23:") >= 0:
         content = content.replace(" 23:"," 22:")
-        return content
+    return content
 
 def pso2_time(content):#转换成北京時間pso2
     count01 = 0
@@ -609,6 +600,29 @@ def rss_set_mode(group_id, mode):
     save_data()
     return msg
 
+def ngs_emg_push(group_id, action):
+    msg = ''
+    group_id = str(group_id)
+    if action == 'enable':
+        if group_id not in data['ngs_emg_push_group']:
+            data['ngs_emg_push_group'].append(group_id)
+            msg = '已成功启用本群NGS紧急预告推送'
+        else:
+            msg = '本群NGS紧急预告推送已处于启用状态'
+    elif action == 'disable':
+        if group_id in data['ngs_emg_push_group']:
+            data['ngs_emg_push_group'].remove(group_id)
+            msg = '已成功禁用本群NGS紧急预告推送'
+        else:
+            msg = '本群NGS紧急预告推送已处于禁用状态'
+    elif action == 'status':
+        if group_id in data['ngs_emg_push_group']:
+            msg = '本群NGS紧急预告推送状态：启用'
+        else:
+            msg = '本群NGS紧急预告推送状态：禁用'
+    save_data()
+    return msg
+
 @sv.on_prefix('验证码识别')
 async def get_captcha(bot, ev):
     captcha_img = re.search(r"\[CQ:image,file=(.*),url=(.*)\]", str(ev.message))
@@ -707,6 +721,25 @@ async def rss_cmd(bot, ev):
             msg = rss_set_mode(group_id, args[1])
         else:
             msg = '需要附带模式(0/1)'
+    #Discord 的紧急推送开关
+    elif args[0] == 'ngs_emg_push':
+        if not is_admin:
+            msg = '权限不足'
+        elif args[1] == 'enable':
+            msg = ngs_emg_push(group_id=group_id, action='enable')
+        elif args[1] == 'disable':
+            msg = ngs_emg_push(group_id=group_id, action='disable')
+        elif args[1] == 'status':
+            msg = ngs_emg_push(group_id=group_id, action='status')
+        else:
+            msg = '参数错误\npso2cmd ngs_emg_push enable|disable|status'
+    #紧急任务订阅
+    elif args[0] == 'ngs_emg_sub':
+        group_id = str(group_id)
+        if args[1]:
+            msg = f'已订阅NGS紧急任务《{args[2]}》\n将会在出现此任务时收到机器人的@通知'
+        else:
+            msg = f'参数错误'
     else:
         msg = '参数错误'
     await bot.send(ev, msg)
@@ -721,3 +754,50 @@ async def job():
 async def clear_ngs_emg_time():
     data['ngs_emg_time'].clear()
     save_data()
+#Discord 获取紧急预告推送
+intents = discord.Intents.default()
+intents.message_content = True
+client = discord.Client(intents=intents,proxy=data['proxy'])
+
+@client.event
+async def on_ready():
+    sv.logger.info(f'Discord 用户 {client.user} 已成功登录')
+
+@client.event
+async def on_message(message):
+    if message.author == client.user:
+        return
+    if message.content == 'ping':
+        await message.channel.send('pong!')
+    if str(message.author) == '@PSO2NGS_JP #15分前緊急予告#0000':
+        msg = ''
+        emg_msg_dict = message.embeds[0].to_dict()
+        sv.logger.info(f'收到来自 {message.author} 的消息: {emg_msg_dict}')
+        #组装紧急预告信息字符串，翻译并转换时间
+        if 'fields' in emg_msg_dict:
+            for fields in emg_msg_dict['fields']:
+                msg += f"{fields['name']}\n└{fields['value']}\n"
+            msg = remove_lf(msg)
+            msg = f"{emg_msg_dict['title']}\n{msg}"
+        else:
+            msg = f"{emg_msg_dict['title']}"
+        msg = f'来自Discord的NGS预告\n{msg}'
+        msg = ngs_translate(msg)
+        msg = ngs_time(msg)
+        sv.logger.debug(f'待推送消息{msg}')
+        #推送信息
+        if data['ngs_emg_push_group']:
+            sv.logger.debug(f'进入判断')
+            bot = hoshino.get_bot()
+            for group_id in data['ngs_emg_push_group']:
+                sv.logger.debug(f'进入循环，当前{group_id}')
+                await bot.send_group_msg(group_id=group_id, message=msg)
+
+def start_discord_client(token):
+    client.run(token)
+
+if 'discord_token' in data and data['discord_token'] != '':
+    thd = threading.Thread(target=start_discord_client, args=(data['discord_token'],))
+    thd.start()
+else:
+    sv.logger.error(f'未配置 Discord Token')
