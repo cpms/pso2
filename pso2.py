@@ -31,18 +31,42 @@ data = {
     'ngs_emg_time': [],
     'discord_token': '',
     'ngs_emg_push_group': [],
+    'emg_sub': {},
 }
 
-HELP_MSG = '''命令前缀pso2cmd
+emg_quest_name = (
+    '演唱会/动画',
+    '資源採掘リグ防衛戦：エアリオ',
+    '資源採掘リグ防衛戦：リテム',
+    '資源採掘リグ防衛戦：クヴァリス',
+    '統制型ドールズ討伐戦',
+    'ネクス・ヴェラ討伐戦',
+    'ダークファルス迎撃戦',
+    'スナイダル・ヴェラ討伐戦',
+    'レヌス・ヴェラ討伐戦',
+    'クロコダラス・ヴェラ討伐戦',
+    'アムス・ヴェラ討伐戦',
+    'ドルドリス・ヴェラ討伐戦',
+    'ニルス・ヴェラ討伐戦',
+    'ハルフィリア湖の戦い',
+)
+
+HELP_MSG = '''管理员命令：
 pso2cmd list : 查看订阅列表
-pso2cmd add rss地址 : 添加rss订阅
-pso2cmd remove 序号 : 删除订阅列表指定项
+pso2cmd add <rss地址> : 添加rss订阅
+pso2cmd remove <序号> : 删除订阅列表指定项
 pso2cmd ngs_emg_push enable|disable|status：启用|禁用|查看本群NGS紧急预告推送
+
+用户命令：
 今日土豆：发送最新土豆图
 今日土豆细节：发送最新土豆细节图
 最近紧急：发送最近一次NGS紧急任务的发生时间
 紧急记录：发送今日NGS紧急任务的时间记录
 验证码识别：在此关键词后面接上SEGA的验证码图片，尝试进行识别
+pso2cmd 紧急任务列表：显示所有可订阅的紧急任务
+pso2cmd 订阅紧急 <任务编号>：订阅指定的紧急任务
+pso2cmd 取消订阅紧急 <任务编号>：取消订阅指定的紧急任务
+pso2cmd 我的紧急订阅：列出自己已订阅的紧急任务
 '''
 
 sv = hoshino.Service('pso2', bundle='pso2ngs紧急预告、每日土豆图、PSO2日文验证码识别', help_= HELP_MSG)
@@ -145,7 +169,13 @@ def ngs_translate(content):
     content = content.replace("ムービーライブ終了後に","动画结束后")
     content = content.replace("緊急クエストは発生しません","不会发生紧急任务")
     content = content.replace("開催","")
-    content = content.replace("資源採掘リグ防衛戦","資源採掘リグ防衛戦(TD)")
+    
+    if content == '資源採掘リグ防衛戦':
+        content = content.replace("資源採掘リグ防衛戦","資源採掘リグ防衛戦(TD)")
+    content = content.replace("資源採掘リグ防衛戦：エアリオ","資源採掘リグ防衛戦(平原TD)")
+    content = content.replace("資源採掘リグ防衛戦：リテム","資源採掘リグ防衛戦(沙漠TD)")
+    content = content.replace("資源採掘リグ防衛戦：クヴァリス","資源採掘リグ防衛戦(冰原TD)")
+
     content = content.replace("統制型ドールズ討伐戦","統制型ドールズ討伐戦(阿足)")
     content = content.replace("ネクス・ヴェラ討伐戦","ネクス・ヴェラ討伐戦(龙)")
     content = content.replace("ダークファルス迎撃戦","ダークファルス迎撃戦(DF)")
@@ -623,6 +653,76 @@ def ngs_emg_push(group_id, action):
     save_data()
     return msg
 
+def get_emg_quest():
+    msg = '可订阅的紧急任务列表：\n'
+    for index, i in enumerate(emg_quest_name):
+        msg += f'{index+1}：{i}\n'
+    msg = remove_lf(msg)
+    return msg
+
+#添加用户任务订阅
+def add_emg_quest_sub(user_id,quest_index):
+    if quest_index in data['emg_sub']:
+        if user_id in data['emg_sub'][quest_index]:
+            msg = f'[CQ:at,qq={user_id}]不能重复订阅同一个任务'
+        else:
+            data['emg_sub'][quest_index].append(user_id)
+            msg = f'[CQ:at,qq={user_id}]您已成功订阅 {emg_quest_name[quest_index]}'
+    else:
+        data['emg_sub'][quest_index] = []
+        data['emg_sub'][quest_index].append(user_id)
+        msg = f'[CQ:at,qq={user_id}]您已成功订阅 {emg_quest_name[quest_index]}'
+    save_data()
+    return msg
+
+#删除用户任务订阅
+def remove_emg_quest_sub(user_id,quest_index):
+    if quest_index in data['emg_sub']:
+        if user_id not in data['emg_sub'][quest_index]:
+            msg = '[CQ:at,qq={user_id}]您并没有订阅此任务'
+        else:
+            data['emg_sub'][quest_index].remove(user_id)
+            msg = f'[CQ:at,qq={user_id}]您已成功取消订阅 {emg_quest_name[quest_index]}'
+            if len(data['emg_sub'][quest_index]) == 0:
+                del data['emg_sub'][quest_index]
+    else:
+        msg = '[CQ:at,qq={user_id}]您并没有订阅此任务'
+    save_data()
+    return msg
+
+#列出用户任务订阅
+def list_emg_quest_sub(user_id):
+    msg = ''
+    for quest_index in data['emg_sub']:
+        if user_id in data['emg_sub'][quest_index]:
+            msg += f'{quest_index+1}：{emg_quest_name[quest_index]}\n'
+    if msg == '':
+        msg = f'[CQ:at,qq={user_id}]您的任务订阅列表为空'
+    else:
+        msg = f'[CQ:at,qq={user_id}]您订阅的任务列表如下：\n{msg}'
+        msg = remove_lf(msg)
+    return msg
+
+#生成对应订阅用户@CQ码字符串
+def sub_push(quest_index):
+    if quest_index in data['emg_sub']:
+        user_at_cqcode = ''
+        for user_id in data['emg_sub'][quest_index]:
+            user_at_cqcode += f'[CQ:at,qq={user_id}]'
+        return user_at_cqcode
+    else:
+        return None
+
+#获取TD任务的区域
+def get_td_area(index):
+    if index == 0:
+        return '資源採掘リグ防衛戦：エアリオ'
+    elif index == 1:
+        return '資源採掘リグ防衛戦：リテム'
+    elif index == 2:
+        return '資源採掘リグ防衛戦：クヴァリス'
+
+
 @sv.on_prefix('验证码识别')
 async def get_captcha(bot, ev):
     captcha_img = re.search(r"\[CQ:image,file=(.*),url=(.*)\]", str(ev.message))
@@ -674,6 +774,7 @@ async def send_ngs_emg_log(bot, ev):
 async def rss_cmd(bot, ev):
     msg = ''
     group_id = ev.group_id
+    user_id = ev.user_id
     args = ev.message.extract_plain_text().split()
     is_admin = hoshino.priv.check_priv(ev, hoshino.priv.ADMIN)
 
@@ -734,12 +835,27 @@ async def rss_cmd(bot, ev):
         else:
             msg = '参数错误\npso2cmd ngs_emg_push enable|disable|status'
     #紧急任务订阅
-    elif args[0] == 'ngs_emg_sub':
-        group_id = str(group_id)
-        if args[1]:
-            msg = f'已订阅NGS紧急任务《{args[2]}》\n将会在出现此任务时收到机器人的@通知'
+    elif args[0] == '订阅紧急':
+        user_id = str(user_id)
+        if args[1] in ['1','2','3','4','5','6','7','8','9','10','11','12','13','14']:
+            msg = add_emg_quest_sub(user_id=user_id,quest_index=int(args[1])-1)
         else:
-            msg = f'参数错误'
+            msg = f'无效的任务编号，请使用"pso2cmd 紧急任务列表"命令查看可订阅的任务'
+        msg = ngs_translate(msg)
+    elif args[0] == '取消订阅紧急':
+        user_id = str(user_id)
+        if args[1] in ['1','2','3','4','5','6','7','8','9','10','11','12','13','14']:
+            msg = remove_emg_quest_sub(user_id=user_id,quest_index=int(args[1])-1)
+        else:
+            msg = f'无效的任务编号，请使用"pso2cmd 紧急任务列表"命令查看可订阅的任务'
+        msg = ngs_translate(msg)
+    elif args[0] == '我的紧急订阅':
+        user_id = str(user_id)
+        msg = list_emg_quest_sub(user_id=user_id)
+        msg = ngs_translate(msg)
+    elif args[0] == '紧急任务列表':
+        msg = get_emg_quest()
+        msg = ngs_translate(msg)
     else:
         msg = '参数错误'
     await bot.send(ev, msg)
@@ -775,22 +891,34 @@ async def on_message(message):
         sv.logger.info(f'收到来自 {message.author} 的消息: {emg_msg_dict}')
         #组装紧急预告信息字符串，翻译并转换时间
         if 'fields' in emg_msg_dict:
+            index = 0
             for fields in emg_msg_dict['fields']:
                 msg += f"{fields['name']}\n└{fields['value']}\n"
-            msg = remove_lf(msg)
+                #at订阅用户，TD任务需要特殊处理，加上区域名称
+                if fields['value'] == '資源採掘リグ防衛戦':
+                    msg2 = sub_push(emg_quest_name.index(get_td_area(index)))
+                    if msg2 != None:
+                        msg += f'{msg2}\n'
+                else:
+                    msg2 = sub_push(emg_quest_name.index(fields['value']))
+                    if msg2 != None:
+                        msg += f'{msg2}\n'
+                index += 1
             msg = f"{emg_msg_dict['title']}\n{msg}"
+        #如果是演唱会/动画
         else:
-            msg = f"{emg_msg_dict['title']}"
+            msg = f"{emg_msg_dict['title']}\n"
+            msg2 = sub_push(0)
+            if msg2 != None:
+                msg += msg2
+        msg = remove_lf(msg)
         msg = f'来自Discord的NGS预告\n{msg}'
         msg = ngs_translate(msg)
         msg = ngs_time(msg)
-        sv.logger.debug(f'待推送消息{msg}')
         #推送信息
         if data['ngs_emg_push_group']:
-            sv.logger.debug(f'进入判断')
             bot = hoshino.get_bot()
             for group_id in data['ngs_emg_push_group']:
-                sv.logger.debug(f'进入循环，当前{group_id}')
                 await bot.send_group_msg(group_id=group_id, message=msg)
 
 def start_discord_client(token):
