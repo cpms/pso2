@@ -898,11 +898,11 @@ async def on_message(message):
                 msg += f"{fields['name']}\n└{fields['value']}\n"
                 #at订阅用户，TD任务需要特殊处理，加上区域名称
                 if fields['value'] == '資源採掘リグ防衛戦':
-                    msg2 = sub_push(emg_quest_name.index(get_td_area(index)))
+                    msg2 = sub_push(str(emg_quest_name.index(get_td_area(index))))
                     if msg2 != None:
                         msg += f'{msg2}\n'
                 else:
-                    msg2 = sub_push(emg_quest_name.index(fields['value']))
+                    msg2 = sub_push(str(emg_quest_name.index(fields['value'])))
                     if msg2 != None:
                         msg += f'{msg2}\n'
                 index += 1
