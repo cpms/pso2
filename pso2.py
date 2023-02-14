@@ -112,6 +112,8 @@ def load_data():
                 data['discord_token'] = d['discord_token']
             if 'ngs_emg_push_group' in d :
                 data['ngs_emg_push_group'] = d['ngs_emg_push_group']
+            if 'emg_sub' in d :
+                data['emg_sub'] = d['emg_sub']
 
     except:
         traceback.print_exc()
@@ -170,7 +172,7 @@ def ngs_translate(content):
     content = content.replace("緊急クエストは発生しません","不会发生紧急任务")
     content = content.replace("開催","")
     
-    if content == '資源採掘リグ防衛戦':
+    if content.find('資源採掘リグ防衛戦') >= 0 and content.find('：') == -1:
         content = content.replace("資源採掘リグ防衛戦","資源採掘リグ防衛戦(TD)")
     content = content.replace("資源採掘リグ防衛戦：エアリオ","資源採掘リグ防衛戦(平原TD)")
     content = content.replace("資源採掘リグ防衛戦：リテム","資源採掘リグ防衛戦(沙漠TD)")
@@ -667,11 +669,11 @@ def add_emg_quest_sub(user_id,quest_index):
             msg = f'[CQ:at,qq={user_id}]不能重复订阅同一个任务'
         else:
             data['emg_sub'][quest_index].append(user_id)
-            msg = f'[CQ:at,qq={user_id}]您已成功订阅 {emg_quest_name[quest_index]}'
+            msg = f'[CQ:at,qq={user_id}]您已成功订阅 {emg_quest_name[int(quest_index)]}'
     else:
         data['emg_sub'][quest_index] = []
         data['emg_sub'][quest_index].append(user_id)
-        msg = f'[CQ:at,qq={user_id}]您已成功订阅 {emg_quest_name[quest_index]}'
+        msg = f'[CQ:at,qq={user_id}]您已成功订阅 {emg_quest_name[int(quest_index)]}'
     save_data()
     return msg
 
@@ -682,7 +684,7 @@ def remove_emg_quest_sub(user_id,quest_index):
             msg = '[CQ:at,qq={user_id}]您并没有订阅此任务'
         else:
             data['emg_sub'][quest_index].remove(user_id)
-            msg = f'[CQ:at,qq={user_id}]您已成功取消订阅 {emg_quest_name[quest_index]}'
+            msg = f'[CQ:at,qq={user_id}]您已成功取消订阅 {emg_quest_name[int(quest_index)]}'
             if len(data['emg_sub'][quest_index]) == 0:
                 del data['emg_sub'][quest_index]
     else:
@@ -695,7 +697,7 @@ def list_emg_quest_sub(user_id):
     msg = ''
     for quest_index in data['emg_sub']:
         if user_id in data['emg_sub'][quest_index]:
-            msg += f'{quest_index+1}：{emg_quest_name[quest_index]}\n'
+            msg += f'{int(quest_index)+1}：{emg_quest_name[int(quest_index)]}\n'
     if msg == '':
         msg = f'[CQ:at,qq={user_id}]您的任务订阅列表为空'
     else:
@@ -838,14 +840,14 @@ async def rss_cmd(bot, ev):
     elif args[0] == '订阅紧急':
         user_id = str(user_id)
         if args[1] in ['1','2','3','4','5','6','7','8','9','10','11','12','13','14']:
-            msg = add_emg_quest_sub(user_id=user_id,quest_index=int(args[1])-1)
+            msg = add_emg_quest_sub(user_id=user_id,quest_index=str(int(args[1])-1))
         else:
             msg = f'无效的任务编号，请使用"pso2cmd 紧急任务列表"命令查看可订阅的任务'
         msg = ngs_translate(msg)
     elif args[0] == '取消订阅紧急':
         user_id = str(user_id)
         if args[1] in ['1','2','3','4','5','6','7','8','9','10','11','12','13','14']:
-            msg = remove_emg_quest_sub(user_id=user_id,quest_index=int(args[1])-1)
+            msg = remove_emg_quest_sub(user_id=user_id,quest_index=str(int(args[1])-1))
         else:
             msg = f'无效的任务编号，请使用"pso2cmd 紧急任务列表"命令查看可订阅的任务'
         msg = ngs_translate(msg)
