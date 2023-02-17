@@ -663,41 +663,49 @@ def get_emg_quest():
     return msg
 
 #添加用户任务订阅
-def add_emg_quest_sub(user_id,quest_index):
-    if quest_index in data['emg_sub']:
-        if user_id in data['emg_sub'][quest_index]:
-            msg = f'[CQ:at,qq={user_id}]不能重复订阅同一个任务'
+def add_emg_quest_sub(group_id,user_id,quest_index):
+    if group_id in data['emg_sub']:
+        if quest_index in data['emg_sub'][group_id]:
+            if user_id in data['emg_sub'][group_id][quest_index]:
+                msg = f'[CQ:at,qq={user_id}]不能重复订阅同一个任务'
+            else:
+                data['emg_sub'][group_id][quest_index].append(user_id)
+                msg = f'[CQ:at,qq={user_id}]您已成功订阅 {emg_quest_name[int(quest_index)]}'
         else:
-            data['emg_sub'][quest_index].append(user_id)
+            data['emg_sub'][group_id][quest_index] = []
+            data['emg_sub'][group_id][quest_index].append(user_id)
             msg = f'[CQ:at,qq={user_id}]您已成功订阅 {emg_quest_name[int(quest_index)]}'
     else:
-        data['emg_sub'][quest_index] = []
-        data['emg_sub'][quest_index].append(user_id)
+        data['emg_sub'][group_id] = {}
+        data['emg_sub'][group_id][quest_index] = []
+        data['emg_sub'][group_id][quest_index].append(user_id)
         msg = f'[CQ:at,qq={user_id}]您已成功订阅 {emg_quest_name[int(quest_index)]}'
     save_data()
     return msg
 
 #删除用户任务订阅
-def remove_emg_quest_sub(user_id,quest_index):
-    if quest_index in data['emg_sub']:
-        if user_id not in data['emg_sub'][quest_index]:
-            msg = '[CQ:at,qq={user_id}]您并没有订阅此任务'
+def remove_emg_quest_sub(group_id,user_id,quest_index):
+    if group_id in data['emg_sub']:
+        if quest_index in data['emg_sub'][group_id]:
+            if user_id not in data['emg_sub'][group_id][quest_index]:
+                msg = '[CQ:at,qq={user_id}]您并没有订阅此任务'
+            else:
+                data['emg_sub'][group_id][quest_index].remove(user_id)
+                msg = f'[CQ:at,qq={user_id}]您已成功取消订阅 {emg_quest_name[int(quest_index)]}'
         else:
-            data['emg_sub'][quest_index].remove(user_id)
-            msg = f'[CQ:at,qq={user_id}]您已成功取消订阅 {emg_quest_name[int(quest_index)]}'
-            if len(data['emg_sub'][quest_index]) == 0:
-                del data['emg_sub'][quest_index]
+            msg = '[CQ:at,qq={user_id}]您并没有订阅此任务'
     else:
-        msg = '[CQ:at,qq={user_id}]您并没有订阅此任务'
+        msg = '[CQ:at,qq={user_id}]您并没有订阅此任务' 
     save_data()
     return msg
 
 #列出用户任务订阅
-def list_emg_quest_sub(user_id):
+def list_emg_quest_sub(group_id,user_id):
     msg = ''
-    for quest_index in data['emg_sub']:
-        if user_id in data['emg_sub'][quest_index]:
-            msg += f'{int(quest_index)+1}：{emg_quest_name[int(quest_index)]}\n'
+    if group_id in data['emg_sub']:
+        for quest_index in data['emg_sub'][group_id]:
+            if user_id in data['emg_sub'][group_id][quest_index]:
+                msg += f'{int(quest_index)+1}：{emg_quest_name[int(quest_index)]}\n'
     if msg == '':
         msg = f'[CQ:at,qq={user_id}]您的任务订阅列表为空'
     else:
@@ -706,12 +714,15 @@ def list_emg_quest_sub(user_id):
     return msg
 
 #生成对应订阅用户@CQ码字符串
-def sub_push(quest_index):
-    if quest_index in data['emg_sub']:
-        user_at_cqcode = ''
-        for user_id in data['emg_sub'][quest_index]:
-            user_at_cqcode += f'[CQ:at,qq={user_id}]'
-        return user_at_cqcode
+def sub_push(group_id,quest_index):
+    if group_id in data['emg_sub']:
+        if quest_index in data['emg_sub'][group_id]:
+            user_at_cqcode = ''
+            for user_id in data['emg_sub'][group_id][quest_index]:
+                user_at_cqcode += f'[CQ:at,qq={user_id}]'
+            return user_at_cqcode
+        else:
+            return None
     else:
         return None
 
@@ -838,22 +849,25 @@ async def rss_cmd(bot, ev):
             msg = '参数错误\npso2cmd ngs_emg_push enable|disable|status'
     #紧急任务订阅
     elif args[0] == '订阅紧急':
+        group_id = str(group_id)
         user_id = str(user_id)
         if args[1] in ['1','2','3','4','5','6','7','8','9','10','11','12','13','14']:
-            msg = add_emg_quest_sub(user_id=user_id,quest_index=str(int(args[1])-1))
+            msg = add_emg_quest_sub(group_id=group_id,user_id=user_id,quest_index=str(int(args[1])-1))
         else:
             msg = f'无效的任务编号，请使用"pso2cmd 紧急任务列表"命令查看可订阅的任务'
         msg = ngs_translate(msg)
     elif args[0] == '取消订阅紧急':
+        group_id = str(group_id)
         user_id = str(user_id)
         if args[1] in ['1','2','3','4','5','6','7','8','9','10','11','12','13','14']:
-            msg = remove_emg_quest_sub(user_id=user_id,quest_index=str(int(args[1])-1))
+            msg = remove_emg_quest_sub(group_id=group_id,user_id=user_id,quest_index=str(int(args[1])-1))
         else:
             msg = f'无效的任务编号，请使用"pso2cmd 紧急任务列表"命令查看可订阅的任务'
         msg = ngs_translate(msg)
     elif args[0] == '我的紧急订阅':
+        group_id = str(group_id)
         user_id = str(user_id)
-        msg = list_emg_quest_sub(user_id=user_id)
+        msg = list_emg_quest_sub(group_id=group_id,user_id=user_id)
         msg = ngs_translate(msg)
     elif args[0] == '紧急任务列表':
         msg = get_emg_quest()
@@ -888,40 +902,38 @@ async def on_message(message):
     if message.content == 'ping':
         await message.channel.send('pong!')
     if str(message.author) == '@PSO2NGS_JP #15分前緊急予告#0000':
-        msg = ''
         emg_msg_dict = message.embeds[0].to_dict()
         sv.logger.info(f'收到来自 {message.author} 的消息: {emg_msg_dict}')
-        #组装紧急预告信息字符串，翻译并转换时间
-        if 'fields' in emg_msg_dict:
-            index = 0
-            for fields in emg_msg_dict['fields']:
-                msg += f"{fields['name']}\n└{fields['value']}\n"
-                #at订阅用户，TD任务需要特殊处理，加上区域名称
-                if fields['value'] == '資源採掘リグ防衛戦':
-                    msg2 = sub_push(str(emg_quest_name.index(get_td_area(index))))
-                    if msg2 != None:
-                        msg += f'{msg2}\n'
-                else:
-                    msg2 = sub_push(str(emg_quest_name.index(fields['value'])))
-                    if msg2 != None:
-                        msg += f'{msg2}\n'
-                index += 1
-            msg = f"{emg_msg_dict['title']}\n{msg}"
-        #如果是演唱会/动画
-        else:
-            msg = f"{emg_msg_dict['title']}\n"
-            msg2 = sub_push(0)
-            if msg2 != None:
-                msg += msg2
-        msg = remove_lf(msg)
-        msg = f'来自Discord的NGS预告\n{msg}'
-        msg = ngs_translate(msg)
-        msg = ngs_time(msg)
-        #推送信息
-        if data['ngs_emg_push_group']:
-            bot = hoshino.get_bot()
-            for group_id in data['ngs_emg_push_group']:
-                await bot.send_group_msg(group_id=group_id, message=msg)
+        #逐群组装紧急预告信息字符串，翻译并转换时间后发送
+        bot = hoshino.get_bot()
+        for group_id in data['ngs_emg_push_group']:
+            msg = ''
+            if 'fields' in emg_msg_dict:
+                index = 0
+                for fields in emg_msg_dict['fields']:
+                    msg += f"{fields['name']}\n└{fields['value']}\n"
+                    #at订阅用户，TD任务需要特殊处理，加上区域名称
+                    if fields['value'] == '資源採掘リグ防衛戦':
+                        msg2 = sub_push(group_id,str(emg_quest_name.index(get_td_area(index))))
+                        if msg2 != None:
+                            msg += f'{msg2}\n'
+                    else:
+                        msg2 = sub_push(group_id,str(emg_quest_name.index(fields['value'])))
+                        if msg2 != None:
+                            msg += f'{msg2}\n'
+                    index += 1
+                msg = f"{emg_msg_dict['title']}\n{msg}"
+            #如果是演唱会/动画
+            else:
+                msg = f"{emg_msg_dict['title']}\n"
+                msg2 = sub_push(group_id,'0')
+                if msg2 != None:
+                    msg += msg2
+            msg = remove_lf(msg)
+            msg = f'来自Discord的NGS预告\n{msg}'
+            msg = ngs_translate(msg)
+            msg = ngs_time(msg)
+            await bot.send_group_msg(group_id=group_id, message=msg)
 
 def start_discord_client(token):
     client.run(token)
