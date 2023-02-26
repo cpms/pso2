@@ -288,24 +288,6 @@ def remove_html(content):
     content = content.replace('<br />','\n')#转换换行符3
     if content.find("#PSO2NGS #緊急クエスト通知") >= 0:#处理NGS预告
         content = ngs_time(content)
-        #记录紧急任务时间到数据文件
-        if content.find("#PSO2NGS #緊急クエスト通知") >= 0 and content.find("ステージライブ") >= 0 and content.find("予告：") >= 0: #处理半点紧急
-            if time.localtime().tm_hour == 23:
-                data['ngs_emg_time'].append('00:30')
-            else:
-                ngs_emg_time_tmp = time.localtime().tm_hour + 1
-                data['ngs_emg_time'].append(str(ngs_emg_time_tmp) + ':30')
-        elif content.find("#PSO2NGS #緊急クエスト通知") >= 0 and content.find(":30") == -1 and content.find("予告：") >= 0: #处理整点紧急
-            if time.localtime().tm_hour == 23:
-                data['ngs_emg_time'].append('00:00')
-            else:
-                ngs_emg_time_tmp = time.localtime().tm_hour + 1
-                data['ngs_emg_time'].append(str(ngs_emg_time_tmp) + ':00')
-        temp_list = []#紧急记录去重
-        for i in data['ngs_emg_time']:
-            if i not in temp_list:
-                temp_list.append(i)
-        data['ngs_emg_time'] = temp_list
         content = re.sub(r"\n#PSO2NGS #緊急クエスト通知","",content)#去掉最后一行
         content = ngs_translate(content)#翻译内容
     elif content.find(" #PSO2") >= 0:#处理PSO2预告
@@ -735,6 +717,26 @@ def get_td_area(index):
     elif index == 2:
         return '資源採掘リグ防衛戦：クヴァリス'
 
+#记录紧急任务时间到数据文件
+def ngs_emg_log(content):
+    if content.find("ステージライブ") >= 0 or content.find("ムービーライブ") >= 0: #处理半点紧急
+        if time.localtime().tm_hour == 23:
+            data['ngs_emg_time'].append('00:30')
+        else:
+            ngs_emg_time_tmp = time.localtime().tm_hour + 1
+            data['ngs_emg_time'].append(str(ngs_emg_time_tmp) + ':30')
+    elif content.find("緊急クエスト") >= 0 and content.find(":30") == -1: #处理整点紧急
+        if time.localtime().tm_hour == 23:
+            data['ngs_emg_time'].append('00:00')
+        else:
+            ngs_emg_time_tmp = time.localtime().tm_hour + 1
+            data['ngs_emg_time'].append(str(ngs_emg_time_tmp) + ':00')
+    temp_list = []#紧急记录去重
+    for i in data['ngs_emg_time']:
+        if i not in temp_list:
+            temp_list.append(i)
+    data['ngs_emg_time'] = temp_list
+    save_data()
 
 @sv.on_prefix('验证码识别')
 async def get_captcha(bot, ev):
@@ -930,6 +932,7 @@ async def on_message(message):
                 if msg2 != None:
                     msg += msg2
             msg = remove_lf(msg)
+            ngs_emg_log(msg) #记录紧急任务的时间
             msg = f'来自Discord的NGS预告\n{msg}'
             msg = ngs_translate(msg)
             msg = ngs_time(msg)
