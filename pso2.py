@@ -49,6 +49,7 @@ emg_quest_name = (
     'ドルドリス・ヴェラ討伐戦',
     'ニルス・ヴェラ討伐戦',
     'ハルフィリア湖の戦い',
+    'ハッピーラッピー大作戦',
 )
 
 HELP_MSG = '''管理员命令：
@@ -188,6 +189,7 @@ def ngs_translate(content):
     content = content.replace("ドルドリス・ヴェラ討伐戦","ドルドリス・ヴェラ討伐戦(钻头)")
     content = content.replace("ニルス・ヴェラ討伐戦","ニルス・ヴェラ討伐戦(长颈鹿)")
     content = content.replace("ハルフィリア湖の戦い","ハルフィリア湖の戦い(神盾DF)")
+    content = content.replace("ハッピーラッピー大作戦","ハッピーラッピー大作戦(拉比)")
     #discord消息翻译
     content = content.replace("緊急クエスト","紧急任务")
     content = content.replace("ステージライブ","演唱会")
@@ -853,7 +855,7 @@ async def rss_cmd(bot, ev):
     elif args[0] == '订阅紧急':
         group_id = str(group_id)
         user_id = str(user_id)
-        if args[1] in ['1','2','3','4','5','6','7','8','9','10','11','12','13','14']:
+        if args[1] in ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15']:
             msg = add_emg_quest_sub(group_id=group_id,user_id=user_id,quest_index=str(int(args[1])-1))
         else:
             msg = f'无效的任务编号，请使用"pso2cmd 紧急任务列表"命令查看可订阅的任务'
@@ -861,7 +863,7 @@ async def rss_cmd(bot, ev):
     elif args[0] == '取消订阅紧急':
         group_id = str(group_id)
         user_id = str(user_id)
-        if args[1] in ['1','2','3','4','5','6','7','8','9','10','11','12','13','14']:
+        if args[1] in ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15']:
             msg = remove_emg_quest_sub(group_id=group_id,user_id=user_id,quest_index=str(int(args[1])-1))
         else:
             msg = f'无效的任务编号，请使用"pso2cmd 紧急任务列表"命令查看可订阅的任务'
