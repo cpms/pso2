@@ -50,6 +50,7 @@ emg_quest_name = (
     'ニルス・ヴェラ討伐戦',
     'ハルフィリア湖の戦い',
     'ハッピーラッピー大作戦',
+    '野望の残滓',
 )
 
 HELP_MSG = '''管理员命令：
@@ -190,6 +191,7 @@ def ngs_translate(content):
     content = content.replace("ニルス・ヴェラ討伐戦","ニルス・ヴェラ討伐戦(长颈鹿)")
     content = content.replace("ハルフィリア湖の戦い","ハルフィリア湖の戦い(神盾DF)")
     content = content.replace("ハッピーラッピー大作戦","ハッピーラッピー大作戦(拉比)")
+    content = content.replace("野望の残滓","野望の残滓（骷髅哥）")
     #discord消息翻译
     content = content.replace("緊急クエスト","紧急任务")
     content = content.replace("ステージライブ","演唱会")
@@ -852,28 +854,28 @@ async def rss_cmd(bot, ev):
         else:
             msg = '参数错误\npso2cmd ngs_emg_push enable|disable|status'
     #紧急任务订阅
-    elif args[0] == '订阅紧急':
+    elif args[0] == '订阅紧急' or args[0] == '订阅紧急任务' or args[0] == '紧急订阅' or args[0] == '紧急任务订阅':
         group_id = str(group_id)
         user_id = str(user_id)
-        if args[1] in ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15']:
+        if args[1] in ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16']:
             msg = add_emg_quest_sub(group_id=group_id,user_id=user_id,quest_index=str(int(args[1])-1))
         else:
             msg = f'无效的任务编号，请使用"pso2cmd 紧急任务列表"命令查看可订阅的任务'
         msg = ngs_translate(msg)
-    elif args[0] == '取消订阅紧急':
+    elif args[0] == '取消订阅紧急' or args[0] == '取消订阅':
         group_id = str(group_id)
         user_id = str(user_id)
-        if args[1] in ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15']:
+        if args[1] in ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16']:
             msg = remove_emg_quest_sub(group_id=group_id,user_id=user_id,quest_index=str(int(args[1])-1))
         else:
             msg = f'无效的任务编号，请使用"pso2cmd 紧急任务列表"命令查看可订阅的任务'
         msg = ngs_translate(msg)
-    elif args[0] == '我的紧急订阅':
+    elif args[0] == '我的紧急订阅' or args[0] == '我的订阅':
         group_id = str(group_id)
         user_id = str(user_id)
         msg = list_emg_quest_sub(group_id=group_id,user_id=user_id)
         msg = ngs_translate(msg)
-    elif args[0] == '紧急任务列表':
+    elif args[0] == '紧急任务列表' or args[0] == '紧急列表':
         msg = get_emg_quest()
         msg = ngs_translate(msg)
     else:
@@ -935,7 +937,7 @@ async def on_message(message):
                     msg += msg2
             msg = remove_lf(msg)
             ngs_emg_log(msg) #记录紧急任务的时间
-            msg = f'来自Discord的NGS预告\n{msg}'
+            #msg = f'来自Discord的NGS预告\n{msg}'
             msg = ngs_translate(msg)
             msg = ngs_time(msg)
             await bot.send_group_msg(group_id=group_id, message=msg)
