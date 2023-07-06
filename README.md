@@ -4,7 +4,7 @@
 * 推送 NGS 异常天气通知
 * 通知信息经过格式化，翻译成中文并且时间自动转换成北京时间
 * 记录 NGS 紧急任务的发生时间
-* 获取每日土豆
+* ~~获取每日土豆~~（现在土豆固定刷新地点了，不再需要此功能）
 * PSO2 日文验证码识别（使用 [pso2s.com](http://pso2s.com) 提供的服务）
 
 本插件使用 RSSHub 来订阅推特的紧急预告信息，默认使用网上公开的 RSSHub 服务器，建议有条件的可以自行搭建
@@ -25,26 +25,32 @@
 # 初始化
 在需要提供服务的Q群使用命令订阅以下链接（注意订阅链接有更新）
 
-分别是 **NGS 紧急通知**、**NGS 土豆图**、**PSO2 紧急通知**、**NGS 异常天气通知**
+分别是 **NGS 紧急通知**、**PSO2 紧急通知**、**NGS 异常天气通知**
 
 **NGS 异常天气通知推特那边更新也不是特别及时，有时候延迟几分钟，感觉实用性不是很强，请酌情选择订阅**
 ```
 pso2cmd add https://rss.shab.fun/twitter/user/PSO2NGS_JP
-pso2cmd add https://rss.shab.fun/twitter/user/YukiPikochi?filter=%23アルファリアクター
 pso2cmd add https://rss.shab.fun/twitter/user/pso2_emg_hour
 pso2cmd add https://rss.shab.fun/twitter/user/Pso2ngsB?filter=%E7%95%B0%E5%B8%B8%E6%B0%97%E8%B1%A1%E9%80%9A%E7%9F%A5
 ```
 **因为本插件针对以上信息源进行定制解析，所以不建议使用本插件订阅其他 RSS 源**
 
+# Discord 方式获取紧急任务预告
+新增 Discord 推送通道，注意此功能为**通过 Discord 获取紧急任务信息并在Q群推送**，并且支持用户订阅指定的任务，在出现指定任务时at用户作提醒
+需要申请 Discord 开发者权限并做一些配置，详见[文档](https://github.com/cpms/pso2/blob/dev/discord.md)
+
 # 命令
 * `pso2cmd list` : 查看订阅列表
 * `pso2cmd add rss地址 `: 添加rss订阅
 * `pso2cmd remove 序号` : 删除订阅列表指定项
-* `今日土豆`：发送最新土豆图
-* `今日土豆细节`：发送最新土豆细节图
+* `pso2cmd ngs_emg_push enable|disable|status`：启用|禁用|查看本群NGS紧急预告推送
 * `最近紧急`：发送最近一次 NGS 紧急任务的发生时间
 * `紧急记录`：发送今日 NGS 紧急任务的时间记录
 * `验证码识别`：在此关键词后面接上 SEGA 的验证码图片，尝试进行识别
+* `pso2cmd 紧急任务列表`：显示所有可订阅的紧急任务
+* `pso2cmd 订阅紧急 <任务编号>`：订阅指定的紧急任务
+* `pso2cmd 取消订阅紧急 <任务编号>`：取消订阅指定的紧急任务
+* `pso2cmd 我的紧急订阅`：列出自己已订阅的紧急任务
 
 # 鸣谢
 rss 订阅插件原作者[@zyujs](https://github.com/zyujs)
