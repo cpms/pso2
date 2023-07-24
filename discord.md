@@ -30,11 +30,11 @@
 
 ![image](https://github.com/cpms/pso2/assets/4178287/1a33588b-734b-4686-8992-463df14fa61b)
 
-10. 编辑插件的配置文件 `data.json`，找到 `discord_token` 字段，将刚才获取的 token 写入（记得一定要配置代理服务器 `proxy` 字段，否则 Discord 服务器无法连接）
+10. 编辑插件的配置文件 `data.json`，找到 `discord_token` 字段，将刚才获取的 token 写入（如果服务器在墙内，记得一定要配置代理服务器 `proxy` 字段，否则无法连接 Discord 服务器）
  
-11. 启动 `Hoshino`，观察日志是否有 Discord 用户成功登录字样。如果登录成功，可以在频道看到机器人已经在线
+11. 启动 `Hoshino`，观察日志是否有`Discord 用户成功登录`字样。如果登录成功，可以在频道看到机器人已经在线
  
-12. 在文本频道发送 `ping`，如果一切正常，机器人会响应 `pong`
+12. 在 Discord 的文本频道发送 `ping`，如果一切正常，机器人会响应 `pong`
 
 13. 在要启用推送的QQ群，发送命令 `pso2cmd ngs_emg_push enable` 启动该群的推送功能（需要管理员权限）
 
