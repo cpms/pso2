@@ -37,7 +37,7 @@ pso2cmd add https://rss.shab.fun/twitter/user/Pso2ngsB?filter=%E7%95%B0%E5%B8%B8
 
 # Discord 方式获取紧急任务预告
 新增 Discord 推送通道，注意此功能为**通过 Discord 获取紧急任务信息并在Q群推送**，并且支持用户订阅指定的任务，在出现指定任务时at用户作提醒
-需要申请 Discord 开发者权限并做一些配置，详见[文档](https://github.com/cpms/pso2/blob/dev/discord.md)
+需要申请 Discord 开发者权限并做一些配置，详见[文档](https://github.com/cpms/pso2/blob/main/discord.md)
 
 # 命令
 * `pso2cmd list` : 查看订阅列表
