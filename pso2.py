@@ -36,21 +36,16 @@ data = {
 
 emg_quest_name = (
     '演唱会/动画',
-    '資源採掘リグ防衛戦：エアリオ',
     '資源採掘リグ防衛戦：リテム',
     '資源採掘リグ防衛戦：クヴァリス',
-    '統制型ドールズ討伐戦',
-    'ネクス・ヴェラ討伐戦',
     'ダークファルス迎撃戦',
-    'スナイダル・ヴェラ討伐戦',
-    'レヌス・ヴェラ討伐戦',
     'クロコダラス・ヴェラ討伐戦',
     'アムス・ヴェラ討伐戦',
     'ドルドリス・ヴェラ討伐戦',
     'ニルス・ヴェラ討伐戦',
     'ハルフィリア湖の戦い',
-    'ハッピーラッピー大作戦',
     '野望の残滓',
+    'ホーンテッドドメイン',
 )
 
 HELP_MSG = '''管理员命令：
@@ -176,22 +171,17 @@ def ngs_translate(content):
     
     if content.find('資源採掘リグ防衛戦') >= 0 and content.find('：') == -1:
         content = content.replace("資源採掘リグ防衛戦","資源採掘リグ防衛戦(TD)")
-    content = content.replace("資源採掘リグ防衛戦：エアリオ","資源採掘リグ防衛戦(平原TD)")
     content = content.replace("資源採掘リグ防衛戦：リテム","資源採掘リグ防衛戦(沙漠TD)")
     content = content.replace("資源採掘リグ防衛戦：クヴァリス","資源採掘リグ防衛戦(冰原TD)")
 
-    content = content.replace("統制型ドールズ討伐戦","統制型ドールズ討伐戦(阿足)")
-    content = content.replace("ネクス・ヴェラ討伐戦","ネクス・ヴェラ討伐戦(龙)")
     content = content.replace("ダークファルス迎撃戦","ダークファルス迎撃戦(DF)")
-    content = content.replace("スナイダル・ヴェラ討伐戦","スナイダル・ヴェラ討伐戦(吉他)")
-    content = content.replace("レヌス・ヴェラ討伐戦","レヌス・ヴェラ討伐戦(沙虫)")
     content = content.replace("クロコダラス・ヴェラ討伐戦","クロコダラス・ヴェラ討伐戦(鳄鱼)")
     content = content.replace("アムス・ヴェラ討伐戦","アムス・ヴェラ討伐戦(小龙人)")
     content = content.replace("ドルドリス・ヴェラ討伐戦","ドルドリス・ヴェラ討伐戦(钻头)")
     content = content.replace("ニルス・ヴェラ討伐戦","ニルス・ヴェラ討伐戦(长颈鹿)")
     content = content.replace("ハルフィリア湖の戦い","ハルフィリア湖の戦い(神盾DF)")
-    content = content.replace("ハッピーラッピー大作戦","ハッピーラッピー大作戦(拉比)")
     content = content.replace("野望の残滓","野望の残滓（骷髅哥）")
+    content = content.replace("ホーンテッドドメイン","ホーンテッドドメイン（闹鬼领域）")
     #discord消息翻译
     content = content.replace("緊急クエスト","紧急任务")
     content = content.replace("ステージライブ","演唱会")
@@ -857,7 +847,7 @@ async def rss_cmd(bot, ev):
     elif args[0] == '订阅紧急' or args[0] == '订阅紧急任务' or args[0] == '紧急订阅' or args[0] == '紧急任务订阅':
         group_id = str(group_id)
         user_id = str(user_id)
-        if args[1] in ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16']:
+        if args[1] in ['1','2','3','4','5','6','7','8','9','10','11']:
             msg = add_emg_quest_sub(group_id=group_id,user_id=user_id,quest_index=str(int(args[1])-1))
         else:
             msg = f'无效的任务编号，请使用"pso2cmd 紧急任务列表"命令查看可订阅的任务'
@@ -865,7 +855,7 @@ async def rss_cmd(bot, ev):
     elif args[0] == '取消订阅紧急' or args[0] == '取消订阅':
         group_id = str(group_id)
         user_id = str(user_id)
-        if args[1] in ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16']:
+        if args[1] in ['1','2','3','4','5','6','7','8','9','10','11']:
             msg = remove_emg_quest_sub(group_id=group_id,user_id=user_id,quest_index=str(int(args[1])-1))
         else:
             msg = f'无效的任务编号，请使用"pso2cmd 紧急任务列表"命令查看可订阅的任务'
@@ -927,6 +917,8 @@ async def on_message(message):
                         msg2 = sub_push(group_id,str(emg_quest_name.index(fields['value'])))
                         if msg2 != None:
                             msg += f'{msg2}\n'
+                    if index < 3:
+                        msg += f'\n------------------\n'
                     index += 1
                 msg = f"{emg_msg_dict['title']}\n{msg}"
             #如果是演唱会/动画
@@ -949,4 +941,4 @@ if 'discord_token' in data and data['discord_token'] != '':
     thd = threading.Thread(target=start_discord_client, args=(data['discord_token'],))
     thd.start()
 else:
-    sv.logger.error(f'未配置 Discord Token')
+    sv.logger.error(f'未配置 Discord token')
