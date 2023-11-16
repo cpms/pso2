@@ -45,7 +45,7 @@ emg_quest_name = (
     'ニルス・ヴェラ討伐戦',
     'ハルフィリア湖の戦い',
     '野望の残滓',
-    'ホーンテッドドメイン',
+    '星滅の予兆',
 )
 
 HELP_MSG = '''管理员命令：
@@ -181,7 +181,7 @@ def ngs_translate(content):
     content = content.replace("ニルス・ヴェラ討伐戦","ニルス・ヴェラ討伐戦(长颈鹿)")
     content = content.replace("ハルフィリア湖の戦い","ハルフィリア湖の戦い(神盾DF)")
     content = content.replace("野望の残滓","野望の残滓（骷髅哥）")
-    content = content.replace("ホーンテッドドメイン","ホーンテッドドメイン（闹鬼领域）")
+    content = content.replace("星滅の予兆","星滅の予兆（孤独）")
     #discord消息翻译
     content = content.replace("緊急クエスト","紧急任务")
     content = content.replace("ステージライブ","演唱会")
