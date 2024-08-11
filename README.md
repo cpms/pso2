@@ -57,7 +57,7 @@ rss 订阅插件原作者[@zyujs](https://github.com/zyujs)
 
 本插件默认使用的 RSSHub 服务器 [rss.shab.fun](http://rss.shab.fun/)
 
-PSO2NGS紧急预告机器人[@PSO2NGS 15分前緊急予告BOT](https://twitter.com/PSO2NGS_JP)
+PSO2NGS紧急预告机器人[@PSO2NGS 15分前緊急予告BOT](https://twitter.com/PSO2NGS_JP) RIP
 
 PSO2紧急预告机器人[@PSO2 １時間前緊急予告BOT](https://twitter.com/pso2_emg_hour)
 
@@ -66,6 +66,8 @@ NGS 异常天气通知[@PSO2 NGS Bot](https://twitter.com/Pso2ngsB)
 提供每日土豆的推主[@ピコチ](https://twitter.com/YukiPikochi)
 
 PSO2 日文验证码识别服务 [pso2s.com](http://pso2s.com)
+
+新的NGS紧急预告频道[あむちゃんの告知](https://discord.com/channels/1204223829459730432)
 
 # 许可
 本插件以 GPL-v3 协议开源

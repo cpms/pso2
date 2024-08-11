@@ -4,7 +4,7 @@
    
 2. 在服务器里创建一个文本频道
    
-3. 将[此频道](https://discord.com/channels/1048264948935053422/1048265963478462485)的消息转发到自己刚创建的文本频道（点击下方的关注）
+3. 将[此频道](https://discord.com/channels/1204223829459730432/1230475483464990831)的消息转发到自己刚创建的文本频道（点击下方的关注）
    
 4. 访问 [Discord 开发者页面](https://discord.com/developers/applications)，点击右上角的 `New Application` 创建一个应用程序
 

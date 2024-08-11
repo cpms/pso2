@@ -46,6 +46,7 @@ emg_quest_name = (
     'ハルフィリア湖の戦い',
     '野望の残滓',
     '星滅の予兆',
+    'ハッピーラッピー大作戦',
 )
 
 HELP_MSG = '''管理员命令：
@@ -173,7 +174,7 @@ def ngs_translate(content):
         content = content.replace("資源採掘リグ防衛戦","資源採掘リグ防衛戦(TD)")
     content = content.replace("資源採掘リグ防衛戦：リテム","資源採掘リグ防衛戦(沙漠TD)")
     content = content.replace("資源採掘リグ防衛戦：クヴァリス","資源採掘リグ防衛戦(冰原TD)")
-
+    content = content.replace("資源採掘リグ防衛戦","資源採掘リグ防衛戦(TD塔防)")
     content = content.replace("ダークファルス迎撃戦","ダークファルス迎撃戦(DF)")
     content = content.replace("クロコダラス・ヴェラ討伐戦","クロコダラス・ヴェラ討伐戦(鳄鱼)")
     content = content.replace("アムス・ヴェラ討伐戦","アムス・ヴェラ討伐戦(小龙人)")
@@ -182,6 +183,7 @@ def ngs_translate(content):
     content = content.replace("ハルフィリア湖の戦い","ハルフィリア湖の戦い(神盾DF)")
     content = content.replace("野望の残滓","野望の残滓（骷髅哥）")
     content = content.replace("星滅の予兆","星滅の予兆（孤独）")
+    content = content.replace("ハッピーラッピー大作戦","ハッピーラッピー大作戦（拉比）")
     #discord消息翻译
     content = content.replace("緊急クエスト","紧急任务")
     content = content.replace("ステージライブ","演唱会")
@@ -847,7 +849,7 @@ async def rss_cmd(bot, ev):
     elif args[0] == '订阅紧急' or args[0] == '订阅紧急任务' or args[0] == '紧急订阅' or args[0] == '紧急任务订阅':
         group_id = str(group_id)
         user_id = str(user_id)
-        if args[1] in ['1','2','3','4','5','6','7','8','9','10','11']:
+        if args[1] in ['1','2','3','4','5','6','7','8','9','10','11','12']:
             msg = add_emg_quest_sub(group_id=group_id,user_id=user_id,quest_index=str(int(args[1])-1))
         else:
             msg = f'无效的任务编号，请使用"pso2cmd 紧急任务列表"命令查看可订阅的任务'
@@ -855,7 +857,7 @@ async def rss_cmd(bot, ev):
     elif args[0] == '取消订阅紧急' or args[0] == '取消订阅':
         group_id = str(group_id)
         user_id = str(user_id)
-        if args[1] in ['1','2','3','4','5','6','7','8','9','10','11']:
+        if args[1] in ['1','2','3','4','5','6','7','8','9','10','11','12']:
             msg = remove_emg_quest_sub(group_id=group_id,user_id=user_id,quest_index=str(int(args[1])-1))
         else:
             msg = f'无效的任务编号，请使用"pso2cmd 紧急任务列表"命令查看可订阅的任务'
@@ -897,42 +899,63 @@ async def on_message(message):
         return
     if message.content == 'ping':
         await message.channel.send('pong!')
-    if str(message.author) == '@PSO2NGS_JP #15分前緊急予告#0000':
-        emg_msg_dict = message.embeds[0].to_dict()
-        sv.logger.info(f'收到来自 {message.author} 的消息: {emg_msg_dict}')
+    #temp start
+    bot = hoshino.get_bot()
+    msg = message.content
+    ngs_emg_log(msg) #记录紧急任务的时间
+    msg = ngs_translate(msg) #翻译
+    msg = ngs_time(msg) #转换时间
+    msg = msg.replace(" - ","\n└") #分行
+    msg = remove_lf(msg) #去空行
+    for group_id in data['ngs_emg_push_group']:
+        await bot.send_group_msg(group_id=group_id, message=msg)
+    #temp end
+    #if str(message.author) == 'あむちゃんの告知 #通知チャンネル#0000':
+    if False:
+        sv.logger.info(f'收到来自 {message.author} 的消息: {message.content}')
         #逐群组装紧急预告信息字符串，翻译并转换时间后发送
         bot = hoshino.get_bot()
+        lines = message.content.splitlines()
         for group_id in data['ngs_emg_push_group']:
             msg = ''
-            if 'fields' in emg_msg_dict:
-                index = 0
-                for fields in emg_msg_dict['fields']:
-                    msg += f"{fields['name']}\n└{fields['value']}\n"
-                    #at订阅用户，TD任务需要特殊处理，加上区域名称
-                    if fields['value'] == '資源採掘リグ防衛戦':
-                        msg2 = sub_push(group_id,str(emg_quest_name.index(get_td_area(index))))
-                        if msg2 != None:
-                            msg += f'{msg2}\n'
-                    else:
-                        msg2 = sub_push(group_id,str(emg_quest_name.index(fields['value'])))
-                        if msg2 != None:
-                            msg += f'{msg2}\n'
-                    if index < 3:
-                        msg += f'\n------------------\n'
-                    index += 1
-                msg = f"{emg_msg_dict['title']}\n{msg}"
-            #如果是演唱会/动画
-            else:
-                msg = f"{emg_msg_dict['title']}\n"
+            if '予告：『緊急クエスト』' in lines:
+                msg = f'{lines[0]}\n{lines[1]}\n{lines[2]}\n'#组装前3行
+                msg2 = sub_push(group_id,str(emg_quest_name.index(lines[2][9:])))#生成订阅用户at
+                if msg2 != None:
+                    msg += f'{msg2}\n'
+                msg += f'\n------------------\n{lines[3]}\n{lines[4]}\n'#组装4-5行
+                if lines[6] == '資源採掘リグ防衛戦':#沙漠TD特殊处理
+                    msg2 = sub_push(group_id,str(emg_quest_name.index(f'{lines[4][7:]}：リテム')))#生成订阅用户at
+                    if msg2 != None:
+                        msg += f'{msg2}\n'
+                else:
+                    msg2 = sub_push(group_id,str(emg_quest_name.index(lines[4][7:])))#生成订阅用户at
+                    if msg2 != None:
+                        msg += f'{msg2}\n'
+                msg += f'\n------------------\n{lines[5]}\n{lines[6]}\n'#组装6-7行
+                if lines[8] == '資源採掘リグ防衛戦':#冰原TD特殊处理
+                    msg2 = sub_push(group_id,str(emg_quest_name.index(f'{lines[6][9:]}：クヴァリス')))#生成订阅用户at
+                    if msg2 != None:
+                        msg += f'{msg2}\n'
+                else:
+                    msg2 = sub_push(group_id,str(emg_quest_name.index(lines[6][9:])))#生成订阅用户at
+                    if msg2 != None:
+                        msg += f'{msg2}\n'
+                msg += f'\n------------------\n{lines[7]}\n{lines[8]}'#组装8-9行
+                msg2 = sub_push(group_id,str(emg_quest_name.index(lines[8][8:])))#生成订阅用户at
+                if msg2 != None:
+                    msg += f'\n{msg2}'
+            elif '予告：『ステージライブ』' in lines:#如果是演唱会
+                msg = f"{lines[0]}\n{lines[1]}\{lines[2]}\n"
                 msg2 = sub_push(group_id,'0')
                 if msg2 != None:
                     msg += msg2
-            msg = remove_lf(msg)
             ngs_emg_log(msg) #记录紧急任务的时间
-            #msg = f'来自Discord的NGS预告\n{msg}'
-            msg = ngs_translate(msg)
-            msg = ngs_time(msg)
+            msg = ngs_translate(msg) #翻译
+            msg = ngs_time(msg) #转换时间
+            msg = remove_lf(msg) #去空行
             await bot.send_group_msg(group_id=group_id, message=msg)
+
 
 def start_discord_client(token):
     client.run(token)
